@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, FileText, History, KeyRound } from "lucide-react";
+import { ChevronDown, ChevronUp, FileText, History, Settings } from "lucide-react";
 import { useRef, useState } from "react";
 import type { CatState } from "../types/paper";
 import { CatBubble } from "./CatBubble";
@@ -132,21 +132,39 @@ export function CatPet({
         actionLabel={showViewAction ? "查看" : undefined}
         onAction={showViewAction ? onOpenLatest : undefined}
       />
+      <span className="cat-ground" />
       <div className="cat-body" aria-label="PaperCat" role="img">
-        <span className="tail" />
-        <span className="ear left" />
-        <span className="ear right" />
+        <span className="tail">
+          <span className="tail-tip" />
+        </span>
+        <span className="ear left">
+          <span className="ear-inner" />
+        </span>
+        <span className="ear right">
+          <span className="ear-inner" />
+        </span>
+        <span className="forehead-mark" />
         <span className="face">
           <span className="eye left" />
           <span className="eye right" />
+          <span className="cheek left" />
+          <span className="cheek right" />
+          <span className="nose" />
           <span className="mouth" />
           <span className="whisker left one" />
           <span className="whisker left two" />
           <span className="whisker right one" />
           <span className="whisker right two" />
         </span>
-        <span className="paw left" />
-        <span className="paw right" />
+        <span className="collar">
+          <span className="bell" />
+        </span>
+        <span className="paw left">
+          <span />
+        </span>
+        <span className="paw right">
+          <span />
+        </span>
       </div>
 
       <aside
@@ -157,7 +175,8 @@ export function CatPet({
         <button
           className="drawer-tab"
           type="button"
-          title={drawerOpen ? "收起" : "打开菜单"}
+          title={drawerOpen ? "收起菜单" : "打开菜单"}
+          aria-label={drawerOpen ? "收起菜单" : "打开菜单"}
           onClick={() => setDrawerOpen((open) => !open)}
         >
           {drawerOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -172,8 +191,8 @@ export function CatPet({
             <span>历史记录</span>
           </button>
           <button type="button" className="drawer-action" onClick={onOpenSettings}>
-            <KeyRound size={15} />
-            <span>配置</span>
+            <Settings size={15} />
+            <span>设置</span>
           </button>
         </div>
       </aside>

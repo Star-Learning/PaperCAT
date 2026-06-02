@@ -23,7 +23,7 @@ def _title_from_metadata_or_file(metadata: dict, file_path: str) -> str:
 
 
 def _extract_short_comment(markdown: str) -> str:
-    marker = "## 猫咪短评"
+    marker = "## 猫猫短评"
     if marker in markdown:
         tail = markdown.split(marker, 1)[1].strip()
         first_line = next((line.strip("- ").strip() for line in tail.splitlines() if line.strip()), "")
@@ -36,24 +36,61 @@ def _extract_short_comment(markdown: str) -> str:
 def _mock_summary(*, title: str, authors: str | None, page_count: int, file_size: int, path: Path, cache: dict) -> str:
     return "\n".join(
         [
-            "# 总结成功",
+            "# PaperCAT 论文精读",
             "",
-            "PaperCat 已成功收到这篇 PDF，并已把论文信息与缓存文件保存到本地。",
+            "## 摘要",
             "",
-            "## 论文信息",
-            f"- 标题：{title}",
-            f"- 作者：{authors or '未识别'}",
-            f"- 页数：{page_count}",
+            "一句话概括：",
+            "> **PaperCAT 已保存这篇 PDF 的本地信息，但当前未启用大模型总结。**",
+            "",
+            "- **问题：** 需要配置大模型 API 后才能生成完整论文精读。",
+            "- **方法：** 当前仅完成 PDF 元数据读取、本地缓存和历史记录保存。",
+            "- **创新：** 暂无模型生成内容。",
+            "- **结果：** PDF 已进入本地缓存，可稍后重新解读。",
+            "- **意义：** 配置 API 后，PaperCAT 会按论文精读 skill 输出结构化总结。",
+            "",
+            "## 背景",
+            "",
+            "当前没有可用的大模型配置，因此 PaperCAT 无法基于论文正文生成完整解读。",
+            "",
+            "## 方法",
+            "",
+            "### 1. 核心思路",
+            "",
+            "PaperCAT 已读取 PDF、缓存文件，并准备将可提取文本交给大模型。",
+            "",
+            "### 2. 关键模块",
+            "",
+            "- PDF 文本提取",
+            "- 本地缓存",
+            "- 历史记录保存",
+            "",
+            "## 实验",
+            "",
+            f"- **任务/数据：** {title}",
+            "- **评价指标：** 当前未生成实验解读。",
+            "- **核心结果：** 需要配置大模型 API 后生成。",
+            "- **需要注意：** 如果 PDF 是扫描版，可能需要 OCR 才能获得正文。",
+            "",
+            "## 结论",
+            "",
+            "用一句话总结：",
+            "> **这是一条本地保存记录，不是完整模型总结。**",
+            "",
+            "核心贡献：",
             f"- 文件名：{path.name}",
-            f"- 文件大小：{file_size} bytes",
+            f"- 作者：{authors or '论文中未明确说明'}",
+            f"- 页数：{page_count}",
             "",
-            "## 本地缓存",
-            f"- 原始路径：{path}",
-            f"- 缓存目录：{cache['cache_dir']}",
-            f"- 缓存 PDF：{cache['cached_pdf_path']}",
+            "### 后续可追问",
             "",
-            "## 当前阶段",
-            "- 大模型总结服务未启用，已返回 mock 总结。",
+            "- 这篇论文的核心贡献是什么？",
+            "- 方法部分有哪些关键模块？",
+            "- 实验结果是否支持论文结论？",
+            "",
+            "## 猫猫短评",
+            "",
+            f"PaperCAT 已缓存这篇论文，文件大小 {file_size} bytes，缓存目录为 {cache['cache_dir']}。",
         ]
     )
 
@@ -112,4 +149,3 @@ async def summarize_paper(file_path: str) -> dict:
         "summary_markdown": summary_markdown,
         "short_comment": _extract_short_comment(summary_markdown),
     }
-

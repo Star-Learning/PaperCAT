@@ -33,6 +33,16 @@ export function usePaperDrop({ setCatState, onSummary }: UsePaperDropOptions) {
       }
 
       try {
+        setCatState("thinking", "我先查一下这篇论文有没有读过...");
+        const existing = await paperApi.lookupByFilePath(filePath);
+        if (existing) {
+          onSummary(existing);
+          await window.paperCat?.setCurrentSummary(existing);
+          await window.paperCat?.openHistory(existing.id);
+          setCatState("success", "这篇论文已经读过啦，已跳到历史记录。");
+          return;
+        }
+
         setCatState("eating", "收到，先咬一口。");
         await new Promise((resolve) => window.setTimeout(resolve, 700));
         setCatState("chewing", "正在保存论文和缓存...");
@@ -40,7 +50,7 @@ export function usePaperDrop({ setCatState, onSummary }: UsePaperDropOptions) {
         setCatState("thinking", "正在认真读，稍等一下。");
         const summary = await paperApi.summarize(filePath);
         onSummary(summary);
-        await window.paperCat?.setCurrentSummary(summary);
+        await window.paperCat?.publishSummary(summary);
         setCatState(
           "success",
           summary.short_comment ? `读完啦：${summary.short_comment}` : "读完啦，点这里查看结果。",

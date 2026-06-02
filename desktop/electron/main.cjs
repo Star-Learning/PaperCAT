@@ -73,9 +73,29 @@ let petWindow = null;
 let resultWindow = null;
 let historyWindow = null;
 let settingsWindow = null;
+const chatWindows = new Map();
 let currentSummary = null;
 let backendProcess = null;
 let isQuittingForSecondInstance = false;
+
+function broadcastSummaryCreated(summary) {
+  const windows = [resultWindow, historyWindow, ...chatWindows.values()];
+  for (const win of windows) {
+    if (win && !win.isDestroyed()) {
+      win.webContents.send("summary:created", summary);
+      win.webContents.send("summary:updated", summary);
+    }
+  }
+}
+
+function broadcastSummaryUpdated(summary) {
+  const windows = [resultWindow, historyWindow, ...chatWindows.values()];
+  for (const win of windows) {
+    if (win && !win.isDestroyed()) {
+      win.webContents.send("summary:updated", summary);
+    }
+  }
+}
 
 const gotSingleInstanceLock = app.requestSingleInstanceLock();
 if (!gotSingleInstanceLock) {
@@ -149,8 +169,8 @@ function createPetWindow() {
   const cursorPoint = screen.getCursorScreenPoint();
   const display = screen.getDisplayNearestPoint(cursorPoint);
   const workArea = display.workArea;
-  const width = 330;
-  const height = 260;
+  const width = 360;
+  const height = 300;
   const win = new BrowserWindow({
     width,
     height,
@@ -217,11 +237,11 @@ function createResultWindow() {
   return win;
 }
 
-function createHistoryWindow() {
+function createHistoryWindow(paperId) {
   const win = new BrowserWindow({
-    width: 880,
-    height: 680,
-    minWidth: 640,
+    width: 1280,
+    height: 760,
+    minWidth: 860,
     minHeight: 460,
     title: "PaperCat History",
     webPreferences: {
@@ -230,14 +250,33 @@ function createHistoryWindow() {
       nodeIntegration: false,
     },
   });
-  win.loadURL(rendererUrl("#/history"));
+  win.loadURL(rendererUrl(paperId ? `#/history?paperId=${encodeURIComponent(paperId)}` : "#/history"));
   return win;
 }
 
-function createSettingsWindow() {
+function createPaperChatWindow(paperId) {
   const win = new BrowserWindow({
-    width: 560,
-    height: 420,
+    width: 680,
+    height: 760,
+    minWidth: 520,
+    minHeight: 560,
+    title: "PaperCat Chat",
+    webPreferences: {
+      preload,
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+  });
+  win.loadURL(rendererUrl(`#/chat?paperId=${encodeURIComponent(paperId)}`));
+  return win;
+}
+
+function createSettingsWindow(mode) {
+  const win = new BrowserWindow({
+    width: 680,
+    height: 640,
+    minWidth: 560,
+    minHeight: 520,
     title: "PaperCat Settings",
     webPreferences: {
       preload,
@@ -245,7 +284,7 @@ function createSettingsWindow() {
       nodeIntegration: false,
     },
   });
-  win.loadURL(rendererUrl("#/settings"));
+  win.loadURL(rendererUrl(mode === "setup" ? "#/settings?mode=setup" : "#/settings"));
   return win;
 }
 
@@ -258,20 +297,34 @@ function openResultWindow() {
   resultWindow = createResultWindow();
 }
 
-function openHistoryWindow() {
+function openHistoryWindow(paperId) {
   if (historyWindow && !historyWindow.isDestroyed()) {
     historyWindow.focus();
+    if (paperId) {
+      historyWindow.webContents.send("history:select", paperId);
+    }
     return;
   }
-  historyWindow = createHistoryWindow();
+  historyWindow = createHistoryWindow(paperId);
 }
 
-function openSettingsWindow() {
+function openPaperChatWindow(paperId) {
+  const existing = chatWindows.get(paperId);
+  if (existing && !existing.isDestroyed()) {
+    existing.focus();
+    return;
+  }
+  const win = createPaperChatWindow(paperId);
+  chatWindows.set(paperId, win);
+  win.on("closed", () => chatWindows.delete(paperId));
+}
+
+function openSettingsWindow(mode) {
   if (settingsWindow && !settingsWindow.isDestroyed()) {
     settingsWindow.focus();
     return;
   }
-  settingsWindow = createSettingsWindow();
+  settingsWindow = createSettingsWindow(mode);
 }
 
 app.whenReady().then(() => {
@@ -284,22 +337,33 @@ app.whenReady().then(() => {
 
   ipcMain.handle("summary:set-current", (_event, summary) => {
     currentSummary = summary;
+    broadcastSummaryUpdated(summary);
+    return true;
+  });
+  ipcMain.handle("summary:publish", (_event, summary) => {
+    currentSummary = summary;
+    broadcastSummaryCreated(summary);
     return true;
   });
   ipcMain.handle("summary:get-current", () => currentSummary);
   ipcMain.handle("window:open-summary", () => openResultWindow());
-  ipcMain.handle("window:open-history", () => openHistoryWindow());
-  ipcMain.handle("window:open-settings", () => openSettingsWindow());
+  ipcMain.handle("window:open-paper-chat", (_event, paperId) => openPaperChatWindow(paperId));
+  ipcMain.handle("window:open-history", (_event, paperId) => openHistoryWindow(paperId));
+  ipcMain.handle("window:open-settings", (_event, mode) => openSettingsWindow(mode));
   ipcMain.handle("window:quit", () => app.quit());
   ipcMain.handle("window:get-pet-position", () => petWindow?.getPosition() ?? [0, 0]);
   ipcMain.handle("window:set-pet-position", (_event, x, y) => {
     petWindow?.setPosition(Math.round(x), Math.round(y), false);
     return true;
   });
+  ipcMain.handle("pet:set-mood", (_event, state, message) => {
+    petWindow?.webContents.send("pet:mood", state, message);
+    return true;
+  });
   ipcMain.handle("window:show-context-menu", () => {
     const menu = Menu.buildFromTemplate([
-      { label: "Open History", click: openHistoryWindow },
-      { label: "Open Settings", click: openSettingsWindow },
+      { label: "Open History", click: () => openHistoryWindow() },
+      { label: "Open Settings", click: () => openSettingsWindow() },
       { type: "separator" },
       { label: "Quit", click: () => app.quit() },
     ]);
@@ -310,10 +374,13 @@ app.whenReady().then(() => {
       (settingsWindow && !settingsWindow.isDestroyed() && settingsWindow) ||
       (petWindow && !petWindow.isDestroyed() && petWindow) ||
       undefined;
-    const result = await dialog.showOpenDialog(owner, {
+    const options = {
       title: "选择 PaperCat 保存路径",
       properties: ["openDirectory", "createDirectory"],
-    });
+    };
+    const result = owner
+      ? await dialog.showOpenDialog(owner, options)
+      : await dialog.showOpenDialog(options);
     if (result.canceled) return null;
     return result.filePaths[0] ?? null;
   });

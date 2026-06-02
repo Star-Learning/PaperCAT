@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing import Literal
 
 
 class HealthResponse(BaseModel):
@@ -31,6 +32,20 @@ class PaperOut(BaseModel):
 
 class PaperListResponse(BaseModel):
     papers: list[PaperOut]
+
+
+class ChatMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(..., min_length=1)
+
+
+class PaperChatRequest(BaseModel):
+    question: str = Field(..., min_length=1)
+    history: list[ChatMessage] = Field(default_factory=list)
+
+
+class PaperChatResponse(BaseModel):
+    answer: str
 
 
 class LlmSettingsOut(BaseModel):

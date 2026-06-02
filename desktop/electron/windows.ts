@@ -34,8 +34,8 @@ export function createPetWindow(): BrowserWindowType {
   const cursorPoint = screen.getCursorScreenPoint();
   const display = screen.getDisplayNearestPoint(cursorPoint);
   const workArea = display.workArea;
-  const width = 330;
-  const height = 260;
+  const width = 360;
+  const height = 300;
   const win = new BrowserWindow({
     width,
     height,
@@ -83,11 +83,11 @@ export function createResultWindow(): BrowserWindowType {
   return win;
 }
 
-export function createHistoryWindow(): BrowserWindowType {
+export function createHistoryWindow(paperId?: string): BrowserWindowType {
   const win = new BrowserWindow({
-    width: 880,
-    height: 680,
-    minWidth: 640,
+    width: 1280,
+    height: 760,
+    minWidth: 860,
     minHeight: 460,
     title: "PaperCat History",
     webPreferences: {
@@ -96,14 +96,33 @@ export function createHistoryWindow(): BrowserWindowType {
       nodeIntegration: false,
     },
   });
-  win.loadURL(rendererUrl("#/history"));
+  win.loadURL(rendererUrl(paperId ? `#/history?paperId=${encodeURIComponent(paperId)}` : "#/history"));
   return win;
 }
 
-export function createSettingsWindow(): BrowserWindowType {
+export function createPaperChatWindow(paperId: string): BrowserWindowType {
   const win = new BrowserWindow({
-    width: 560,
-    height: 420,
+    width: 680,
+    height: 760,
+    minWidth: 520,
+    minHeight: 560,
+    title: "PaperCat Chat",
+    webPreferences: {
+      preload,
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+  });
+  win.loadURL(rendererUrl(`#/chat?paperId=${encodeURIComponent(paperId)}`));
+  return win;
+}
+
+export function createSettingsWindow(mode?: "setup"): BrowserWindowType {
+  const win = new BrowserWindow({
+    width: 680,
+    height: 640,
+    minWidth: 560,
+    minHeight: 520,
     title: "PaperCat Settings",
     webPreferences: {
       preload,
@@ -111,6 +130,6 @@ export function createSettingsWindow(): BrowserWindowType {
       nodeIntegration: false,
     },
   });
-  win.loadURL(rendererUrl("#/settings"));
+  win.loadURL(rendererUrl(mode === "setup" ? "#/settings?mode=setup" : "#/settings"));
   return win;
 }

@@ -65,7 +65,7 @@ def save_paper(
             row = conn.execute("SELECT * FROM papers WHERE id = ?", (paper_id,)).fetchone()
         return _row_to_dict(row)
     except SQLiteError as exc:
-        raise RuntimeError("小猫保存历史时打了个盹，请稍后再试。") from exc
+        raise RuntimeError("小猫保存历史时卡住了，请稍后再试。") from exc
 
 
 def list_papers() -> list[dict]:
@@ -77,6 +77,20 @@ def list_papers() -> list[dict]:
 def get_paper(paper_id: str) -> dict | None:
     with get_connection() as conn:
         row = conn.execute("SELECT * FROM papers WHERE id = ?", (paper_id,)).fetchone()
+    return _row_to_dict(row) if row else None
+
+
+def get_paper_by_file_path(file_path: str) -> dict | None:
+    with get_connection() as conn:
+        row = conn.execute(
+            """
+            SELECT * FROM papers
+            WHERE file_path = ? OR cached_pdf_path = ?
+            ORDER BY created_at DESC
+            LIMIT 1
+            """,
+            (file_path, file_path),
+        ).fetchone()
     return _row_to_dict(row) if row else None
 
 

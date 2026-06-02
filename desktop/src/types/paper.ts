@@ -31,3 +31,12 @@ export interface PaperSummary {
 export interface PaperListResponse {
   papers: PaperSummary[];
 }
+
+export interface PaperChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface PaperChatResponse {
+  answer: string;
+}
