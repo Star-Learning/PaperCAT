@@ -1,5 +1,7 @@
 # PaperCAT
 
+![PaperCAT desktop cat demo](docs/assets/papercat-demo.gif)
+
 PaperCAT 是一个桌面宠物式论文阅读助手。把 PDF 拖到桌面小猫身上，它会解析论文、调用 OpenAI-compatible 大模型生成中文 Markdown 总结，并把阅读记录保存到本地。每篇历史论文旁边还可以打开独立的 AI 对话小窗，继续围绕这篇论文追问。
 
 ## 功能亮点
