@@ -1,4 +1,4 @@
-import { Cat, FileText, Send, UserRound } from "lucide-react";
+import { Cat, FileText, Send, Trash2, UserRound } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { paperApi } from "../api/paperApi";
 import type { PaperChatMessage, PaperSummary } from "../types/paper";
@@ -15,10 +15,6 @@ const starterQuestions = [
   "这篇论文有哪些局限或值得追问的问题？",
 ];
 
-function chatStorageKey(paperId: string) {
-  return `paperCat.chat.${paperId}`;
-}
-
 interface PaperChatPanelProps {
   paperId: string;
   paper?: PaperSummary | null;
@@ -30,34 +26,30 @@ export function PaperChatPanel({ paperId, paper: providedPaper, compact = false 
   const [messages, setMessages] = useState<PaperChatMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(false);
   const [error, setError] = useState("");
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const hydratedRef = useRef(false);
+
+  const loadMessages = async () => {
+    if (!paperId) return;
+    setLoadingHistory(true);
+    try {
+      const result = await paperApi.getChatMessages(paperId);
+      setMessages(result.messages.map(({ role, content }) => ({ role, content })));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "读取对话历史失败。");
+      setMessages([]);
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
 
   useEffect(() => {
-    hydratedRef.current = false;
-    const saved = window.sessionStorage.getItem(chatStorageKey(paperId));
-    if (saved) {
-      try {
-        setMessages(JSON.parse(saved) as PaperChatMessage[]);
-      } catch {
-        setMessages([]);
-      }
-    } else {
-      setMessages([]);
-    }
     setDraft("");
     setError("");
     setPaper(providedPaper ?? null);
-    window.queueMicrotask(() => {
-      hydratedRef.current = true;
-    });
+    void loadMessages();
   }, [paperId, providedPaper]);
-
-  useEffect(() => {
-    if (!paperId || !hydratedRef.current) return;
-    window.sessionStorage.setItem(chatStorageKey(paperId), JSON.stringify(messages));
-  }, [messages, paperId]);
 
   useEffect(() => {
     if (!paperId || providedPaper) return;
@@ -69,7 +61,7 @@ export function PaperChatPanel({ paperId, paper: providedPaper, compact = false 
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, loading]);
+  }, [messages, loading, loadingHistory]);
 
   const setPetMood = (state: "thinking" | "success" | "error", message: string) => {
     void window.paperCat?.setPetMood(state, message);
@@ -79,18 +71,18 @@ export function PaperChatPanel({ paperId, paper: providedPaper, compact = false 
     const text = question.trim();
     if (!text || loading || !paperId) return;
 
-    const nextMessages: PaperChatMessage[] = [...messages, { role: "user", content: text }];
-    const withAssistant: PaperChatMessage[] = [...nextMessages, { role: "assistant", content: "" }];
+    const history = messages;
+    const nextMessages: PaperChatMessage[] = [...history, { role: "user", content: text }];
     let streamedAnswer = "";
 
-    setMessages(withAssistant);
+    setMessages([...nextMessages, { role: "assistant", content: "" }]);
     setDraft("");
     setLoading(true);
     setError("");
-    setPetMood("thinking", "我正在边读边回答...");
+    setPetMood("thinking", "我正边读边回答...");
 
     try {
-      await paperApi.chatStream(paperId, text, messages, (chunk) => {
+      await paperApi.chatStream(paperId, text, history, (chunk) => {
         streamedAnswer += chunk;
         setMessages([...nextMessages, { role: "assistant", content: streamedAnswer }]);
       });
@@ -99,6 +91,7 @@ export function PaperChatPanel({ paperId, paper: providedPaper, compact = false 
         throw new Error("模型没有返回内容。");
       }
       setPetMood("success", "论文对话回答好了。");
+      void loadMessages();
     } catch (err) {
       setError(err instanceof Error ? err.message : "这次对话失败了。");
       setMessages(streamedAnswer ? [...nextMessages, { role: "assistant", content: streamedAnswer }] : nextMessages);
@@ -106,6 +99,14 @@ export function PaperChatPanel({ paperId, paper: providedPaper, compact = false 
     } finally {
       setLoading(false);
     }
+  };
+
+  const clearMessages = async () => {
+    if (!paperId || loading) return;
+    await paperApi.clearChatMessages(paperId);
+    setMessages([]);
+    setError("");
+    setPetMood("success", "这篇论文的对话记录清空了。");
   };
 
   const submit = (event: FormEvent) => {
@@ -124,10 +125,21 @@ export function PaperChatPanel({ paperId, paper: providedPaper, compact = false 
           <h1>{paper?.title || paper?.file_name || "正在读取论文..."}</h1>
           <p>{paper?.short_comment || "提问时会把这篇论文的 PDF 可提取正文和总结一起送入模型上下文。"}</p>
         </div>
+        <button
+          type="button"
+          className="icon-button chat-clear-button"
+          onClick={() => void clearMessages()}
+          disabled={loading || messages.length === 0}
+          title="清空这篇论文的对话历史"
+        >
+          <Trash2 size={16} />
+        </button>
       </header>
 
       <section className="chat-messages" ref={scrollRef}>
-        {messages.length === 0 && (
+        {loadingHistory && <p className="muted">正在读取保存过的对话...</p>}
+
+        {!loadingHistory && messages.length === 0 && (
           <div className="chat-empty">
             <Cat size={24} />
             <strong>从一个问题开始</strong>
@@ -147,7 +159,6 @@ export function PaperChatPanel({ paperId, paper: providedPaper, compact = false 
             {message.content ? <MarkdownViewer markdown={message.content} /> : <div className="chat-thinking">连接模型中...</div>}
           </article>
         ))}
-
       </section>
 
       <form className="chat-composer" onSubmit={submit}>
@@ -160,13 +171,9 @@ export function PaperChatPanel({ paperId, paper: providedPaper, compact = false 
             onChange={(event) => setDraft(event.target.value)}
             onKeyDown={(event) => {
               if (event.key !== "Enter") return;
-              if (event.ctrlKey || event.metaKey) {
-                return;
-              }
-              if (!event.shiftKey) {
-                event.preventDefault();
-                void ask();
-              }
+              if (event.ctrlKey || event.metaKey || event.shiftKey) return;
+              event.preventDefault();
+              void ask();
             }}
           />
           <button type="submit" className="icon-button" disabled={loading || !draft.trim()} title="发送">

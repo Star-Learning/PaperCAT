@@ -248,6 +248,7 @@ function createHistoryWindow(paperId) {
       preload,
       contextIsolation: true,
       nodeIntegration: false,
+      plugins: true,
     },
   });
   win.loadURL(rendererUrl(paperId ? `#/history?paperId=${encodeURIComponent(paperId)}` : "#/history"));

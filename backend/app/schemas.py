@@ -26,6 +26,7 @@ class PaperOut(BaseModel):
     summary_markdown: str
     short_comment: str | None = None
     tags: str | None = None
+    reading_status: Literal["unread", "reading", "read", "favorite"] = "unread"
     created_at: str
     updated_at: str
 
@@ -34,9 +35,24 @@ class PaperListResponse(BaseModel):
     papers: list[PaperOut]
 
 
+class PaperUpdate(BaseModel):
+    tags: str | None = None
+    reading_status: Literal["unread", "reading", "read", "favorite"] = "unread"
+
+
 class ChatMessage(BaseModel):
     role: Literal["user", "assistant"]
     content: str = Field(..., min_length=1)
+
+
+class StoredChatMessage(ChatMessage):
+    id: str
+    paper_id: str
+    created_at: str
+
+
+class PaperChatHistoryResponse(BaseModel):
+    messages: list[StoredChatMessage]
 
 
 class PaperChatRequest(BaseModel):

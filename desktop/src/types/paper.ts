@@ -24,6 +24,7 @@ export interface PaperSummary {
   summary_markdown: string;
   short_comment?: string | null;
   tags?: string | null;
+  reading_status: "unread" | "reading" | "read" | "favorite";
   created_at: string;
   updated_at: string;
 }
@@ -35,6 +36,16 @@ export interface PaperListResponse {
 export interface PaperChatMessage {
   role: "user" | "assistant";
   content: string;
+}
+
+export interface StoredPaperChatMessage extends PaperChatMessage {
+  id: string;
+  paper_id: string;
+  created_at: string;
+}
+
+export interface PaperChatHistoryResponse {
+  messages: StoredPaperChatMessage[];
 }
 
 export interface PaperChatResponse {

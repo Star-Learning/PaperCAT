@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronUp, FileText, History, Settings } from "lucide-react";
+import { ChevronDown, ChevronUp, History, Settings } from "lucide-react";
 import { useRef, useState } from "react";
 import type { CatState } from "../types/paper";
 import { CatBubble } from "./CatBubble";
@@ -134,6 +134,18 @@ export function CatPet({
       />
       <span className="cat-ground" />
       <div className="cat-body" aria-label="PaperCat" role="img">
+        <span className="paper-snack" />
+        <span className="thought-dots">
+          <i />
+          <i />
+          <i />
+        </span>
+        <span className="success-sparkles">
+          <i />
+          <i />
+          <i />
+        </span>
+        <span className="error-tear" />
         <span className="tail">
           <span className="tail-tip" />
         </span>
@@ -182,10 +194,6 @@ export function CatPet({
           {drawerOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         </button>
         <div className="drawer-panel">
-          <button type="button" className="drawer-action" onClick={onOpenLatest}>
-            <FileText size={15} />
-            <span>最近总结</span>
-          </button>
           <button type="button" className="drawer-action" onClick={onOpenHistory}>
             <History size={15} />
             <span>历史记录</span>

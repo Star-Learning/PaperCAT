@@ -9,8 +9,6 @@ import { useCatState } from "./hooks/useCatState";
 import { usePaperDrop } from "./hooks/usePaperDrop";
 import type { PaperSummary } from "./types/paper";
 
-const SETUP_PROMPT_KEY = "paperCat.setupPrompted.v2";
-
 function routeMode() {
   const hash = window.location.hash || "#/pet";
   if (hash.includes("summary")) return "summary";
@@ -37,31 +35,20 @@ function PetApp() {
     });
   }, [setCatState]);
 
-  useEffect(() => {
-    if (window.localStorage.getItem(SETUP_PROMPT_KEY) === "done") return;
-
-    const timer = window.setTimeout(async () => {
-      window.localStorage.setItem(SETUP_PROMPT_KEY, "done");
-      setCatState("idle", "第一次见面，先配置保存路径和模型；也可以先跳过。");
-      await window.paperCat?.openSettings("setup");
-    }, 700);
-
-    return () => window.clearTimeout(timer);
-  }, [setCatState]);
-
-  const openLatest = async () => {
+  const openLatestInHistory = async () => {
     if (latestSummary) {
       await window.paperCat?.setCurrentSummary(latestSummary);
-      await window.paperCat?.openSummary();
+      await window.paperCat?.openHistory(latestSummary.id);
       setCatState("idle");
       return;
     }
+
     try {
       const result = await paperApi.list();
       const latest = result.papers[0];
       if (latest) {
         await window.paperCat?.setCurrentSummary(latest);
-        await window.paperCat?.openSummary();
+        await window.paperCat?.openHistory(latest.id);
         setCatState("idle");
       } else {
         setCatState("idle", "还没有总结，先喂我一篇 PDF。");
@@ -75,8 +62,8 @@ function PetApp() {
     <CatPet
       state={state}
       message={message}
-      onOpenLatest={openLatest}
-      onOpenHistory={() => window.paperCat?.openHistory()}
+      onOpenLatest={openLatestInHistory}
+      onOpenHistory={() => window.paperCat?.openHistory(latestSummary?.id)}
       onOpenSettings={() => window.paperCat?.openSettings()}
       onContextMenu={() => window.paperCat?.showContextMenu()}
       canOpenLatest={Boolean(latestSummary)}

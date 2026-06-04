@@ -11,6 +11,6 @@ class PaperRecord:
     summary_markdown: str
     short_comment: str | None
     tags: str | None
+    reading_status: str
     created_at: str
     updated_at: str
-

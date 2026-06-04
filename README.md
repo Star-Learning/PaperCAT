@@ -2,24 +2,27 @@
 
 ![PaperCAT desktop cat demo](docs/assets/papercat-demo.gif)
 
-PaperCAT 是一个桌面宠物式论文阅读助手。把 PDF 拖到桌面小猫身上，它会解析论文、调用 OpenAI-compatible 大模型生成中文 Markdown 总结，并把阅读记录保存到本地。每篇历史论文旁边还可以打开独立的 AI 对话小窗，继续围绕这篇论文追问。
+PaperCAT 是一个桌面宠物式论文阅读助手。把 PDF 拖到桌面小猫身上，它会自动缓存论文、解析正文、调用 OpenAI-compatible 大模型生成中文 Markdown 总结，并把阅读记录保存到本地。历史记录页可以直接查看缓存 PDF、阅读 PaperCAT 总结，并针对单篇论文继续和 AI 对话。
 
 ## 功能亮点
 
 - 桌面透明小猫窗口：支持拖拽投喂 PDF，并用咀嚼、思考、成功、错误等状态反馈处理进度。
+- 自动缓存 PDF：投喂时直接保存到预设缓存目录，无需手动选择保存位置。
 - 论文精读总结：基于 `skills/paper-cat-paper-reading/SKILL.md` 的提示词结构，生成适合研究者快速阅读的中文总结。
-- 阅读历史：使用 SQLite 保存论文记录、PDF 缓存和总结内容，历史页会实时同步新生成的论文。
-- 重复论文提醒：投喂前会检查缓存中是否已有同一路径的论文，存在时直接跳转到历史记录。
-- 单篇论文 AI 对话：每篇历史记录都带一个固定悬浮对话窗，对话时会把该论文 PDF 文本和总结一并传给模型。
-- 流式输出：论文对话支持边生成边显示，等待时小猫会联动进入思考状态。
-- 首次配置：保存路径和大模型 API 服务都可以在首次启动时配置，也可以跳过后续再设置。
+- 阅读历史：使用 SQLite 保存论文记录、PDF 缓存路径、总结、标签、阅读状态和对话历史。
+- 原文同步阅读：历史详情页直接内嵌显示缓存 PDF，不弹保存框，不跳转外部打开。
+- 同高阅读栏：`PDF 原文` 和 `PaperCAT 总结` 两个窗口自适应屏幕剩余高度，保持同高并各自滚动。
+- 历史检索和管理：支持标题、作者、摘要、标签搜索，支持标签筛选和 `待读 / 在读 / 已读 / 收藏` 状态。
+- 重复论文提醒：投喂前会检查是否已有同一路径论文，存在时直接跳转到对应历史记录。
+- 单篇论文 AI 对话：每篇论文都有固定对话窗，对话时会把 PDF 可提取正文和总结一起传给模型。
+- 流式输出和持久化：AI 回复边生成边显示，对话历史会保存到 SQLite，下次打开仍可继续查看。
 - 模型厂商选择：配置大模型时选择厂商和模型即可，用户只需要粘贴 API key，不必手动填写 Base URL。
 
 ## 技术栈
 
 - Desktop：Electron + React + Vite + TypeScript + Tailwind CSS
 - Backend：Python + FastAPI
-- PDF：PyMuPDF
+- PDF：PyMuPDF + Electron PDF viewer
 - Storage：SQLite
 - LLM：OpenAI-compatible Chat Completions API
 
@@ -27,7 +30,7 @@ PaperCAT 是一个桌面宠物式论文阅读助手。把 PDF 拖到桌面小猫
 
 ```text
 backend/    FastAPI 后端、PDF 解析、LLM 调用、SQLite 存储
-desktop/    Electron 桌面端、小猫 UI、历史记录和论文对话界面
+desktop/    Electron 桌面端、小猫 UI、历史记录、PDF 阅读和论文对话界面
 scripts/    启动、打包等辅助脚本
 skills/     PaperCAT 论文总结 skill
 release/    发布相关输出目录
@@ -86,14 +89,15 @@ npm run dev
 Invoke-RestMethod -Uri http://127.0.0.1:8766/api/health
 ```
 
-## 首次配置
+## 配置
 
-第一次启动后，可以在配置窗口里设置两类信息：
+PaperCAT 不会在启动时强制弹出保存路径选择。默认会直接使用本地缓存目录：
 
-- 保存路径：选择论文缓存和总结输出保存目录。
-- 大模型 API：选择厂商、模型并粘贴 API key。
+```text
+backend/outputs/cache/
+```
 
-这两部分都可以跳过。跳过后仍可打开小猫菜单中的“设置”继续配置。
+需要调整保存位置或大模型 API 时，可以从小猫菜单手动打开“设置”。
 
 当前大模型配置以 OpenAI-compatible API 为核心，支持的常见厂商包括：
 
@@ -122,10 +126,10 @@ backend/.env.example
 
 1. 启动 PaperCAT。
 2. 把本地 PDF 拖到桌面小猫身上。
-3. 小猫会进入处理状态并生成论文总结。
-4. 点击小猫打开当前论文总结窗口。
-5. 从小猫菜单打开历史记录，查看所有已读论文。
-6. 在历史记录中选择任意论文，右侧固定对话窗可以围绕该论文继续问 AI。
+3. 小猫会自动缓存 PDF、解析论文并生成总结。
+4. 阅读完成后点击小猫气泡里的“查看”，会直接打开历史记录并定位到这篇论文。
+5. 历史详情页会同步显示缓存 PDF 原文和 PaperCAT 总结。
+6. 右侧固定对话窗可以围绕当前论文继续向 AI 提问。
 
 论文对话快捷键：
 
@@ -133,15 +137,24 @@ backend/.env.example
 - `Ctrl+Enter`：换行
 - `Shift+Enter`：换行
 
-## 阅读历史和论文对话
+## 阅读历史
 
-每篇历史记录会显示读取时间标签。新生成的论文会在历史页面实时出现，并短暂高亮，方便确认刚刚加入的记录。
+历史记录页包含三块核心区域：
+
+- 左侧：论文列表、搜索、阅读状态筛选、标签筛选。
+- 中间：论文详情、缓存 PDF 原文、PaperCAT 总结。
+- 右侧：当前论文的 AI 对话窗口。
+
+每篇论文会显示读取时间标签。新生成的论文会实时同步到历史页并短暂高亮。历史详情中的 `PDF 原文` 和 `PaperCAT 总结` 会自适应屏幕剩余高度，两个窗口保持同高并各自滚动。
+
+## 论文对话
 
 论文对话会自动携带：
 
 - 论文标题、作者、PDF 路径等元信息
 - 已生成的 Markdown 总结
-- 从 PDF 中提取的正文片段
+- 从缓存 PDF 中提取的正文片段
+- 当前论文的对话历史
 
 因此用户可以直接问：
 
@@ -176,7 +189,13 @@ backend/data/papers.db
 backend/outputs/cache/
 ```
 
-用户自定义保存路径后，会通过 `backend/secrets/storage.env` 覆盖默认缓存目录。
+自定义保存路径后，会通过 `backend/secrets/storage.env` 覆盖默认缓存目录。
+
+缓存目录中会保存：
+
+- PDF 副本
+- `metadata.json`
+- `summary.md`
 
 ## 常见问题
 
@@ -190,7 +209,11 @@ Invoke-RestMethod -Uri http://127.0.0.1:8766/api/health
 
 没有配置 API key：
 
-在小猫菜单中打开设置，选择大模型厂商和模型后粘贴 API key。
+在小猫菜单中打开设置，选择大模型厂商和模型后粘贴 API key。未配置 API key 时，PaperCAT 仍会缓存 PDF 并保存一条本地记录。
+
+历史页没有显示 PDF：
+
+PaperCAT 历史页只读取缓存 PDF。如果缓存文件缺失，请重新投喂一次该论文。
 
 PDF 没有生成有效总结：
 

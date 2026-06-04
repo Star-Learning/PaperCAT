@@ -1,4 +1,10 @@
-import type { PaperChatMessage, PaperChatResponse, PaperListResponse, PaperSummary } from "../types/paper";
+import type {
+  PaperChatHistoryResponse,
+  PaperChatMessage,
+  PaperChatResponse,
+  PaperListResponse,
+  PaperSummary,
+} from "../types/paper";
 
 export interface LlmSettings {
   has_api_key: boolean;
@@ -28,6 +34,10 @@ const API_BASES = [
   import.meta.env.VITE_PAPER_CAT_API_BASE || "http://127.0.0.1:8766",
   "http://127.0.0.1:8766",
 ];
+
+function preferredBase() {
+  return [...new Set(API_BASES)][0].replace(/\/$/, "");
+}
 
 async function requestFromBase<T>(base: string, path: string, init?: RequestInit): Promise<T> {
   let response: Response;
@@ -144,8 +154,19 @@ export const paperApi = {
   lookupByFilePath: (filePath: string) =>
     request<PaperSummary | null>(`/api/papers/lookup?file_path=${encodeURIComponent(filePath)}`),
   get: (id: string) => request<PaperSummary>(`/api/papers/${id}`),
+  pdfUrl: (id: string) => `${preferredBase()}/api/papers/${encodeURIComponent(id)}/pdf`,
+  update: (id: string, payload: Pick<PaperSummary, "tags" | "reading_status">) =>
+    request<PaperSummary>(`/api/papers/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+    }),
   delete: (id: string) =>
     request<{ ok: boolean }>(`/api/papers/${id}`, {
+      method: "DELETE",
+    }),
+  getChatMessages: (id: string) => request<PaperChatHistoryResponse>(`/api/papers/${id}/chat/messages`),
+  clearChatMessages: (id: string) =>
+    request<{ ok: boolean }>(`/api/papers/${id}/chat/messages`, {
       method: "DELETE",
     }),
   chat: (id: string, question: string, history: PaperChatMessage[]) =>

@@ -1,9 +1,49 @@
-import { CalendarClock, ExternalLink, FileText, FolderOpen, Trash2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import {
+  BookOpen,
+  CalendarClock,
+  CheckCircle2,
+  ExternalLink,
+  FileText,
+  FolderOpen,
+  Search,
+  Star,
+  Tags,
+  Trash2,
+} from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { paperApi } from "../api/paperApi";
 import type { PaperSummary } from "../types/paper";
 import { MarkdownViewer } from "./MarkdownViewer";
 import { PaperChatPanel } from "./PaperChatWindow";
+
+type ReadingStatus = PaperSummary["reading_status"];
+type StatusFilter = "all" | ReadingStatus;
+
+const statusOptions: Array<{ value: ReadingStatus; label: string; icon: typeof BookOpen }> = [
+  { value: "unread", label: "待读", icon: BookOpen },
+  { value: "reading", label: "在读", icon: FileText },
+  { value: "read", label: "已读", icon: CheckCircle2 },
+  { value: "favorite", label: "收藏", icon: Star },
+];
+
+function statusLabel(value: ReadingStatus) {
+  return statusOptions.find((item) => item.value === value)?.label ?? "待读";
+}
+
+function statusIcon(value: ReadingStatus) {
+  return statusOptions.find((item) => item.value === value)?.icon ?? BookOpen;
+}
+
+function parseTags(value?: string | null) {
+  return (value ?? "")
+    .split(/[,，#\s]+/)
+    .map((tag) => tag.trim())
+    .filter(Boolean);
+}
+
+function normalizeTags(value: string) {
+  return Array.from(new Set(parseTags(value))).join(", ");
+}
 
 function formatTime(value: string) {
   return new Date(value).toLocaleString();
@@ -28,6 +68,11 @@ export function HistoryPanel() {
   const [papers, setPapers] = useState<PaperSummary[]>([]);
   const [selected, setSelected] = useState<PaperSummary | null>(null);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [tagFilter, setTagFilter] = useState("");
+  const [tagDraft, setTagDraft] = useState("");
+  const [savingMeta, setSavingMeta] = useState(false);
   const [error, setError] = useState("");
   const highlightTimerRef = useRef<number | null>(null);
 
@@ -49,7 +94,7 @@ export function HistoryPanel() {
       setPapers(result.papers);
       setSelected((current) => {
         if (preferredId) return result.papers.find((paper) => paper.id === preferredId) ?? result.papers[0] ?? null;
-        if (current && result.papers.some((paper) => paper.id === current.id)) return current;
+        if (current) return result.papers.find((paper) => paper.id === current.id) ?? result.papers[0] ?? null;
         return result.papers[0] ?? null;
       });
       if (preferredId) flashPaper(preferredId);
@@ -82,6 +127,61 @@ export function HistoryPanel() {
     });
   }, []);
 
+  useEffect(() => {
+    setTagDraft(selected?.tags ?? "");
+  }, [selected?.id, selected?.tags]);
+
+  const allTags = useMemo(
+    () => Array.from(new Set(papers.flatMap((paper) => parseTags(paper.tags)))).sort((a, b) => a.localeCompare(b)),
+    [papers],
+  );
+
+  const filteredPapers = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    return papers.filter((paper) => {
+      if (statusFilter !== "all" && paper.reading_status !== statusFilter) return false;
+      if (tagFilter && !parseTags(paper.tags).includes(tagFilter)) return false;
+      if (!needle) return true;
+      const haystack = [
+        paper.title,
+        paper.authors,
+        paper.year,
+        paper.file_name,
+        paper.file_path,
+        paper.short_comment,
+        paper.tags,
+        paper.summary_markdown,
+      ]
+        .filter(Boolean)
+        .join("\n")
+        .toLowerCase();
+      return haystack.includes(needle);
+    });
+  }, [papers, query, statusFilter, tagFilter]);
+
+  const updatePaperInState = (paper: PaperSummary) => {
+    setPapers((current) => current.map((item) => (item.id === paper.id ? paper : item)));
+    setSelected((current) => (current?.id === paper.id ? paper : current));
+  };
+
+  const saveMeta = async (nextStatus = selected?.reading_status ?? "unread", nextTags = tagDraft) => {
+    if (!selected) return;
+    setSavingMeta(true);
+    setError("");
+    try {
+      const updated = await paperApi.update(selected.id, {
+        reading_status: nextStatus,
+        tags: normalizeTags(nextTags) || null,
+      });
+      updatePaperInState(updated);
+      setTagDraft(updated.tags ?? "");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "保存标签或状态失败。");
+    } finally {
+      setSavingMeta(false);
+    }
+  };
+
   const remove = async (paper: PaperSummary) => {
     await paperApi.delete(paper.id);
     setSelected((current) => (current?.id === paper.id ? null : current));
@@ -93,32 +193,91 @@ export function HistoryPanel() {
       <aside className="history-sidebar">
         <header className="history-sidebar-header">
           <h1>阅读历史</h1>
-          <span>{papers.length} 篇</span>
+          <span>
+            {filteredPapers.length}/{papers.length} 篇
+          </span>
         </header>
+
+        <div className="history-tools">
+          <label className="history-search">
+            <Search size={15} />
+            <input value={query} placeholder="搜索标题、作者、摘要、标签..." onChange={(event) => setQuery(event.target.value)} />
+          </label>
+          <div className="status-filter">
+            <button type="button" className={statusFilter === "all" ? "active" : ""} onClick={() => setStatusFilter("all")}>
+              全部
+            </button>
+            {statusOptions.map(({ value, label }) => (
+              <button
+                key={value}
+                type="button"
+                className={statusFilter === value ? "active" : ""}
+                onClick={() => setStatusFilter(value)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          {allTags.length > 0 && (
+            <div className="tag-filter-row">
+              <button type="button" className={!tagFilter ? "active" : ""} onClick={() => setTagFilter("")}>
+                全部标签
+              </button>
+              {allTags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  className={tagFilter === tag ? "active" : ""}
+                  onClick={() => setTagFilter(tag)}
+                >
+                  #{tag}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         {error && <p className="error-line">{error}</p>}
         {papers.length === 0 && <p className="muted">还没有解读过论文。</p>}
+        {papers.length > 0 && filteredPapers.length === 0 && <p className="muted">没有匹配的历史记录。</p>}
+
         <div className="history-list">
-          {papers.map((paper) => (
-            <button
-              key={paper.id}
-              className={`history-item ${selected?.id === paper.id ? "active" : ""} ${
-                highlightedId === paper.id ? "new-paper" : ""
-              }`}
-              type="button"
-              onClick={() => setSelected(paper)}
-            >
-              <strong>{paper.title || paper.file_name || "未命名论文"}</strong>
-              <span className="paper-time-tag">
-                <CalendarClock size={12} />
-                读取于 {formatTime(paper.created_at)}
-              </span>
-              <span className="history-item-meta">
-                <FileText size={13} />
-                {paper.page_count ? `${paper.page_count} 页` : "页数未知"} · {formatSize(paper.file_size)}
-              </span>
-              {paper.short_comment && <small>{paper.short_comment}</small>}
-            </button>
-          ))}
+          {filteredPapers.map((paper) => {
+            const StatusIcon = statusIcon(paper.reading_status);
+            const tags = parseTags(paper.tags);
+            return (
+              <button
+                key={paper.id}
+                className={`history-item ${selected?.id === paper.id ? "active" : ""} ${
+                  highlightedId === paper.id ? "new-paper" : ""
+                }`}
+                type="button"
+                onClick={() => setSelected(paper)}
+              >
+                <strong>{paper.title || paper.file_name || "未命名论文"}</strong>
+                <span className={`paper-status status-${paper.reading_status}`}>
+                  <StatusIcon size={12} />
+                  {statusLabel(paper.reading_status)}
+                </span>
+                <span className="paper-time-tag">
+                  <CalendarClock size={12} />
+                  读取于 {formatTime(paper.created_at)}
+                </span>
+                <span className="history-item-meta">
+                  <FileText size={13} />
+                  {paper.page_count ? `${paper.page_count} 页` : "页数未知"} · {formatSize(paper.file_size)}
+                </span>
+                {tags.length > 0 && (
+                  <span className="history-tag-list">
+                    {tags.slice(0, 4).map((tag) => (
+                      <em key={tag}>#{tag}</em>
+                    ))}
+                  </span>
+                )}
+                {paper.short_comment && <small>{paper.short_comment}</small>}
+              </button>
+            );
+          })}
         </div>
       </aside>
 
@@ -163,7 +322,55 @@ export function HistoryPanel() {
               )}
             </div>
 
-            <MarkdownViewer markdown={selected.summary_markdown} />
+            <section className="paper-meta-editor">
+              <div className="status-editor">
+                {statusOptions.map(({ value, label, icon: Icon }) => (
+                  <button
+                    key={value}
+                    type="button"
+                    className={selected.reading_status === value ? "active" : ""}
+                    disabled={savingMeta}
+                    onClick={() => void saveMeta(value)}
+                  >
+                    <Icon size={15} />
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <label className="tag-editor">
+                <Tags size={15} />
+                <input
+                  value={tagDraft}
+                  placeholder="添加标签，用逗号或空格分隔"
+                  onChange={(event) => setTagDraft(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      void saveMeta();
+                    }
+                  }}
+                />
+                <button type="button" disabled={savingMeta} onClick={() => void saveMeta()}>
+                  保存
+                </button>
+              </label>
+            </section>
+
+            <div className="paper-reader-grid">
+              <section className="paper-pdf-panel">
+                <header>
+                  <h3>PDF 原文</h3>
+                </header>
+                <iframe title={`${selected.title || selected.file_name || "paper"} PDF`} src={paperApi.pdfUrl(selected.id)} />
+              </section>
+
+              <section className="paper-summary-panel">
+                <header>
+                  <h3>PaperCAT 总结</h3>
+                </header>
+                <MarkdownViewer markdown={selected.summary_markdown} />
+              </section>
+            </div>
           </>
         ) : (
           <p className="empty-state">选择一条历史查看解读。</p>

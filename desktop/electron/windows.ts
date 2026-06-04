@@ -94,6 +94,7 @@ export function createHistoryWindow(paperId?: string): BrowserWindowType {
       preload,
       contextIsolation: true,
       nodeIntegration: false,
+      plugins: true,
     },
   });
   win.loadURL(rendererUrl(paperId ? `#/history?paperId=${encodeURIComponent(paperId)}` : "#/history"));
