@@ -64,6 +64,38 @@ function paperIdFromHash() {
   return new URLSearchParams(query).get("paperId") ?? undefined;
 }
 
+function findMarkdownSectionBounds(markdown: string, heading: string) {
+  const lines = markdown.split(/\r?\n/);
+  const startIndex = lines.findIndex((line) => line.trim() === `## ${heading}`);
+  if (startIndex < 0) return null;
+  let endIndex = lines.length;
+  for (let index = startIndex + 1; index < lines.length; index += 1) {
+    if (/^##\s+/.test(lines[index].trim())) {
+      endIndex = index;
+      break;
+    }
+  }
+  return { startIndex, endIndex, lines };
+}
+
+function extractMarkdownSection(markdown: string, heading: string) {
+  const bounds = findMarkdownSectionBounds(markdown, heading);
+  if (!bounds) return "";
+  return bounds.lines.slice(bounds.startIndex + 1, bounds.endIndex).join("\n").trim();
+}
+
+function removeMarkdownSection(markdown: string, heading: string) {
+  const bounds = findMarkdownSectionBounds(markdown, heading);
+  if (!bounds) return markdown;
+  return [
+    ...bounds.lines.slice(0, bounds.startIndex),
+    ...bounds.lines.slice(bounds.endIndex),
+  ]
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 export function HistoryPanel() {
   const [papers, setPapers] = useState<PaperSummary[]>([]);
   const [selected, setSelected] = useState<PaperSummary | null>(null);
@@ -158,6 +190,15 @@ export function HistoryPanel() {
       return haystack.includes(needle);
     });
   }, [papers, query, statusFilter, tagFilter]);
+
+  const boardMarkdown = useMemo(
+    () => (selected ? extractMarkdownSection(selected.summary_markdown, "论文看板") : ""),
+    [selected],
+  );
+  const summaryWithoutBoard = useMemo(
+    () => (selected ? removeMarkdownSection(selected.summary_markdown, "论文看板") : ""),
+    [selected],
+  );
 
   const updatePaperInState = (paper: PaperSummary) => {
     setPapers((current) => current.map((item) => (item.id === paper.id ? paper : item)));
@@ -356,6 +397,17 @@ export function HistoryPanel() {
               </label>
             </section>
 
+            <section className="paper-board-panel">
+              <header>
+                <h3>论文看板</h3>
+              </header>
+              {boardMarkdown ? (
+                <MarkdownViewer markdown={boardMarkdown} />
+              ) : (
+                <p className="empty-state">这篇论文还没有单独生成论文看板。</p>
+              )}
+            </section>
+
             <div className="paper-reader-grid">
               <section className="paper-pdf-panel">
                 <header>
@@ -368,7 +420,7 @@ export function HistoryPanel() {
                 <header>
                   <h3>PaperCAT 总结</h3>
                 </header>
-                <MarkdownViewer markdown={selected.summary_markdown} />
+                <MarkdownViewer markdown={summaryWithoutBoard} />
               </section>
             </div>
           </>

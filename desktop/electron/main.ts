@@ -6,6 +6,7 @@ import {
   createPetWindow,
   createResultWindow,
   createSettingsWindow,
+  rendererUrl,
 } from "./windows.js";
 
 const require = createRequire(import.meta.url);
@@ -48,9 +49,21 @@ function openResultWindow() {
 
 function openHistoryWindow(paperId?: string) {
   if (historyWindow && !historyWindow.isDestroyed()) {
-    historyWindow.focus();
+    const win = historyWindow;
+    win.focus();
     if (paperId) {
-      historyWindow.webContents.send("history:select", paperId);
+      void win
+        .loadURL(rendererUrl(`#/history?paperId=${encodeURIComponent(paperId)}`))
+        .then(() => {
+          if (!win.isDestroyed()) {
+            win.webContents.send("history:select", paperId);
+          }
+        })
+        .catch(() => {
+          if (!win.isDestroyed()) {
+            win.webContents.send("history:select", paperId);
+          }
+        });
     }
     return;
   }

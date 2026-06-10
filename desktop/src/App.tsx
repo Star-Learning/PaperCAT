@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { paperApi } from "./api/paperApi";
 import { CatPet } from "./components/CatPet";
 import { HistoryPanel } from "./components/HistoryPanel";
@@ -21,9 +21,14 @@ function routeMode() {
 function PetApp() {
   const { state, message, setCatState } = useCatState();
   const [latestSummary, setLatestSummary] = useState<PaperSummary | null>(null);
+  const latestSummaryRef = useRef<PaperSummary | null>(null);
+  const handleLatestSummary = useCallback((summary: PaperSummary) => {
+    latestSummaryRef.current = summary;
+    setLatestSummary(summary);
+  }, []);
   const dropHandlers = usePaperDrop({
     setCatState,
-    onSummary: setLatestSummary,
+    onSummary: handleLatestSummary,
   });
 
   useEffect(() => {
@@ -36,9 +41,10 @@ function PetApp() {
   }, [setCatState]);
 
   const openLatestInHistory = async () => {
-    if (latestSummary) {
-      await window.paperCat?.setCurrentSummary(latestSummary);
-      await window.paperCat?.openHistory(latestSummary.id);
+    const currentLatest = latestSummaryRef.current ?? latestSummary;
+    if (currentLatest) {
+      await window.paperCat?.setCurrentSummary(currentLatest);
+      await window.paperCat?.openHistory(currentLatest.id);
       setCatState("idle");
       return;
     }
@@ -47,6 +53,8 @@ function PetApp() {
       const result = await paperApi.list();
       const latest = result.papers[0];
       if (latest) {
+        latestSummaryRef.current = latest;
+        setLatestSummary(latest);
         await window.paperCat?.setCurrentSummary(latest);
         await window.paperCat?.openHistory(latest.id);
         setCatState("idle");

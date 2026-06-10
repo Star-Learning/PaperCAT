@@ -1218,7 +1218,7 @@ textarea {
 
 .history-detail {
   display: grid;
-  grid-template-rows: auto auto auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto auto minmax(0, 1fr);
   min-width: 0;
   max-height: 100vh;
   padding: 24px;
@@ -1335,6 +1335,67 @@ textarea {
 .tag-editor button:disabled {
   cursor: not-allowed;
   opacity: 0.54;
+}
+
+.paper-board-panel {
+  min-width: 0;
+  margin-bottom: 14px;
+  border: 1px solid rgba(24, 33, 31, 0.1);
+  border-radius: 8px;
+  background: #fffdfa;
+  overflow: hidden;
+}
+
+.paper-board-panel header {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 9px 12px;
+  border-bottom: 1px solid rgba(24, 33, 31, 0.1);
+  background: linear-gradient(135deg, #fffdfa, #eef7f3);
+}
+
+.paper-board-panel h3 {
+  margin: 0;
+  color: #17211e;
+  font-size: 14px;
+}
+
+.paper-board-panel .markdown-viewer {
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.paper-board-panel .markdown-viewer ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.paper-board-panel .markdown-viewer li {
+  min-width: 0;
+  margin: 0;
+  padding: 9px 10px;
+  border: 1px solid rgba(47, 143, 121, 0.12);
+  border-radius: 8px;
+  background: #f8f7f1;
+}
+
+.paper-board-panel .markdown-viewer p {
+  margin: 0;
+}
+
+.paper-board-panel .empty-state {
+  margin: 0;
+  padding: 14px 16px;
+  font-size: 13px;
 }
 
 .paper-reader-grid {

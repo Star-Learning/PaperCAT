@@ -4,7 +4,11 @@ from pathlib import Path
 from uuid import uuid4
 
 from app.config import settings
-from app.prompts.literature_summary_prompt import SYSTEM_PROMPT, USER_PROMPT_TEMPLATE
+from app.prompts.literature_summary_prompt import (
+    SYSTEM_PROMPT,
+    USER_PROMPT_TEMPLATE,
+    load_paper_reading_skill,
+)
 from app.services.llm_client import summarize_with_llm
 from app.services.paper_cache import cache_pdf, cache_summary
 from app.services.paper_cleaner import clean_paper_text
@@ -37,6 +41,21 @@ def _mock_summary(*, title: str, authors: str | None, page_count: int, file_size
     return "\n".join(
         [
             "# PaperCAT 论文精读",
+            "",
+            "## 论文信息",
+            "",
+            "- **论文链接：** 论文中未明确说明",
+            "- **论文代码：** 论文中未明确说明",
+            "- **发表时间：** 论文中未明确说明",
+            "- **机构：** 论文中未明确说明",
+            "",
+            "## 论文看板",
+            "",
+            "- **Motivation：** 需要先配置大模型 API，才能从论文正文中提炼研究动机。",
+            "- **要解决的问题：** 当前仅完成 PDF 缓存和本地记录保存，尚未生成模型解读。",
+            "- **解决方案：** 配置 API 后，PaperCAT 会按论文精读模板解析正文并生成总结。",
+            "- **核心发现：** 论文内容尚未被模型读取，不能给出可靠发现。",
+            "- **后续改进：** 建议配置 API 后重新投喂或重新解读这篇论文。",
             "",
             "## 摘要",
             "",
@@ -110,7 +129,11 @@ async def summarize_paper(file_path: str) -> dict:
 
     if settings.llm_api_key and len(cleaned_text) >= 200:
         limited_text = cleaned_text[: settings.max_paper_chars]
-        user_prompt = USER_PROMPT_TEMPLATE.format(paper_text=limited_text)
+        user_prompt = (
+            USER_PROMPT_TEMPLATE
+            .replace("{skill_text}", load_paper_reading_skill())
+            .replace("{paper_text}", limited_text)
+        )
         summary_markdown = await summarize_with_llm(SYSTEM_PROMPT, user_prompt)
     elif settings.llm_api_key:
         summary_markdown = _mock_summary(

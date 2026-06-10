@@ -302,7 +302,19 @@ function openHistoryWindow(paperId) {
   if (historyWindow && !historyWindow.isDestroyed()) {
     historyWindow.focus();
     if (paperId) {
-      historyWindow.webContents.send("history:select", paperId);
+      historyWindow
+        .loadURL(rendererUrl(`#/history?paperId=${encodeURIComponent(paperId)}`))
+        .then(() => {
+          if (!historyWindow?.isDestroyed()) {
+            historyWindow.webContents.send("history:select", paperId);
+          }
+        })
+        .catch((error) => {
+          logMain(`historyWindow loadURL failed: ${error?.stack || error}`);
+          if (!historyWindow?.isDestroyed()) {
+            historyWindow.webContents.send("history:select", paperId);
+          }
+        });
     }
     return;
   }

@@ -1,76 +1,53 @@
+from os import getenv
+from pathlib import Path
+
+
 SYSTEM_PROMPT = """
 你是 PaperCAT，一只会认真读论文的桌面猫猫，也是严谨的学术助理。
-请基于用户提供的论文正文，用中文生成简洁、准确、信息密度高的 Markdown 论文精读总结。
+请严格按照用户提供的 PaperCAT 论文阅读 Skill 生成中文 Markdown 论文精读总结。
 
-写作规则：
-1. 论文正文是唯一事实来源，不要编造论文中没有的信息。
-2. 标题、作者、年份、数据集、指标、实验数值不明确时，要写“论文中未明确说明”或使用谨慎表述。
-3. 不要照搬 abstract，也不要写成审稿意见；要帮助读者快速把握研究主线。
-4. 复杂方法按“问题 -> 机制 -> 直观理解 -> 为什么有效”的顺序解释。
-5. 保留必要英文术语，例如 Foundation Model、mIoU、F1、RMSE、方法名等。
-6. 重点结论、创新点、关键结果可以加粗，但不要夸大贡献。
-7. 输出必须是 Markdown。
-8. 最后必须包含“## 猫猫短评”，用一句话总结这篇论文适合怎么读。
+硬性规则：
+1. 论文正文和元数据是唯一事实来源，不要编造论文中没有的信息。
+2. Skill 中的输出结构、风格、长度和事实性规则优先级最高。
+3. 输出必须是 Markdown，不要解释你如何遵循 Skill。
 """.strip()
 
 
 USER_PROMPT_TEMPLATE = """
-请阅读下面的论文文本，并按 PaperCAT 论文精读 skill 的结构输出。
+请阅读下面的 PaperCAT 论文阅读 Skill，然后严格按该 Skill 总结论文。
 
-# PaperCAT 论文精读
+<PAPERCAT_READING_SKILL>
+{skill_text}
+</PAPERCAT_READING_SKILL>
 
-## 摘要
-
-一句话概括：
-> **用一句话讲清楚论文最核心的思路。**
-
-- **问题：** 论文主要解决什么问题。
-- **方法：** 论文提出了什么方法、框架或模块。
-- **创新：** 最关键的新意是什么。
-- **结果：** 实验带来了什么主要趋势或提升；没有可靠数字时不要编造。
-- **意义：** 为什么这个方法对相关研究或应用有价值。
-
-## 背景
-
-说明为什么需要这篇论文：主流做法依赖什么、存在什么问题、这篇论文想回答什么核心问题。
-
-## 方法
-
-### 1. 核心思路
-
-先讲整体框架，再讲它想解决的问题。
-
-### 2. 关键模块
-
-只拆 2-3 个最关键机制。每个机制按“目的 -> 做法 -> 直观理解 -> 作用”说明。
-
-## 实验
-
-- **任务/数据：** 论文主要验证什么任务或数据设置。
-- **评价指标：** 使用了哪些核心指标。
-- **核心结果：** 只写最能支撑结论的结果或趋势。
-- **需要注意：** 至少指出一个局限、适用边界或实验解释风险。
-
-## 结论
-
-用一句话总结：
-> **总结论文的价值，不要夸大。**
-
-核心贡献：
-- 贡献 1
-- 贡献 2
-- 贡献 3
-
-### 后续可追问
-
-- 问题 1
-- 问题 2
-- 问题 3
-
-## 猫猫短评
-
-用一句话说明这篇论文适合怎么读、适合被谁参考，或最值得追问哪里。
-
-论文文本：
+<PAPER_TEXT>
 {paper_text}
+</PAPER_TEXT>
 """.strip()
+
+
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parents[3]
+
+
+def _candidate_skill_paths() -> list[Path]:
+    configured = getenv("PAPER_CAT_READING_SKILL_PATH")
+    candidates = []
+    if configured:
+        candidates.append(Path(configured).expanduser())
+    candidates.append(_repo_root() / "skills" / "paper-cat-paper-reading" / "SKILL.md")
+    candidates.append(Path.cwd() / "skills" / "paper-cat-paper-reading" / "SKILL.md")
+    return candidates
+
+
+def load_paper_reading_skill() -> str:
+    for path in _candidate_skill_paths():
+        try:
+            resolved = path.resolve()
+            if resolved.exists() and resolved.is_file():
+                return resolved.read_text(encoding="utf-8").strip()
+        except OSError:
+            continue
+    raise FileNotFoundError(
+        "PaperCAT 论文阅读 skill 未找到，请确认 skills/paper-cat-paper-reading/SKILL.md 存在。"
+    )

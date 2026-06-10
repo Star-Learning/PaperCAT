@@ -22,7 +22,7 @@ app.setPath("userData", userDataDir);
 app.commandLine.appendSwitch("disk-cache-dir", cacheDir);
 app.commandLine.appendSwitch("disable-gpu-shader-disk-cache");
 
-function rendererUrl(hash = ""): string {
+export function rendererUrl(hash = ""): string {
   const devUrl = process.env.VITE_DEV_SERVER_URL;
   if (devUrl) {
     return `${devUrl}${hash}`;
