@@ -13,6 +13,8 @@ export function CatBubble({ message, visible, actionLabel, onAction }: CatBubble
         <button
           type="button"
           className="bubble-action"
+          onPointerDown={(event) => event.stopPropagation()}
+          onPointerUp={(event) => event.stopPropagation()}
           onMouseDown={(event) => event.stopPropagation()}
           onClick={(event) => {
             event.stopPropagation();

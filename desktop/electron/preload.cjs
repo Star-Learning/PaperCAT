@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld("paperCat", {
   openSummary: () => ipcRenderer.invoke("window:open-summary"),
   openPaperChat: (paperId) => ipcRenderer.invoke("window:open-paper-chat", paperId),
   openHistory: (paperId) => ipcRenderer.invoke("window:open-history", paperId),
+  getPendingHistorySelection: () => ipcRenderer.invoke("history:get-pending-selection"),
   onHistorySelect: (callback) => {
     const listener = (_event, paperId) => callback(paperId);
     ipcRenderer.on("history:select", listener);

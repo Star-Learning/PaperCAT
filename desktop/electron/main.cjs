@@ -75,6 +75,7 @@ let historyWindow = null;
 let settingsWindow = null;
 const chatWindows = new Map();
 let currentSummary = null;
+let pendingHistoryPaperId = null;
 let backendProcess = null;
 let isQuittingForSecondInstance = false;
 
@@ -299,7 +300,13 @@ function openResultWindow() {
 }
 
 function openHistoryWindow(paperId) {
+  if (paperId) {
+    pendingHistoryPaperId = paperId;
+  }
   if (historyWindow && !historyWindow.isDestroyed()) {
+    if (!historyWindow.isVisible()) {
+      historyWindow.show();
+    }
     historyWindow.focus();
     if (paperId) {
       historyWindow
@@ -359,6 +366,7 @@ app.whenReady().then(() => {
     return true;
   });
   ipcMain.handle("summary:get-current", () => currentSummary);
+  ipcMain.handle("history:get-pending-selection", () => pendingHistoryPaperId);
   ipcMain.handle("window:open-summary", () => openResultWindow());
   ipcMain.handle("window:open-paper-chat", (_event, paperId) => openPaperChatWindow(paperId));
   ipcMain.handle("window:open-history", (_event, paperId) => openHistoryWindow(paperId));

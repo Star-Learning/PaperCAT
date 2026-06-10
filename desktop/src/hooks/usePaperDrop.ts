@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { paperApi } from "../api/paperApi";
 import type { CatState, PaperSummary } from "../types/paper";
 
@@ -15,8 +15,25 @@ function resolveFilePath(file: File): string {
 }
 
 export function usePaperDrop({ setCatState, onSummary }: UsePaperDropOptions) {
+  const dragLeaveTimerRef = useRef<number | null>(null);
+
+  const clearDragLeaveTimer = useCallback(() => {
+    if (dragLeaveTimerRef.current === null) return;
+    window.clearTimeout(dragLeaveTimerRef.current);
+    dragLeaveTimerRef.current = null;
+  }, []);
+
+  const scheduleDragLeaveReset = useCallback(() => {
+    clearDragLeaveTimer();
+    dragLeaveTimerRef.current = window.setTimeout(() => {
+      dragLeaveTimerRef.current = null;
+      setCatState("idle");
+    }, 120);
+  }, [clearDragLeaveTimer, setCatState]);
+
   const processFile = useCallback(
     async (file: File | undefined) => {
+      clearDragLeaveTimer();
       if (!file) {
         setCatState("error", "没有接到文件。");
         return;
@@ -60,7 +77,7 @@ export function usePaperDrop({ setCatState, onSummary }: UsePaperDropOptions) {
         setCatState("error", message);
       }
     },
-    [onSummary, setCatState],
+    [clearDragLeaveTimer, onSummary, setCatState],
   );
 
   useEffect(() => {
@@ -71,35 +88,48 @@ export function usePaperDrop({ setCatState, onSummary }: UsePaperDropOptions) {
       if (!hasFiles(event)) return;
       event.preventDefault();
       event.stopPropagation();
+      clearDragLeaveTimer();
       if (event.dataTransfer) {
         event.dataTransfer.dropEffect = "copy";
       }
       setCatState("drag-over", "松手吧，我接住了。");
     };
 
+    const handleNativeDragLeave = (event: DragEvent) => {
+      if (!hasFiles(event)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      scheduleDragLeaveReset();
+    };
+
     const handleNativeDrop = (event: DragEvent) => {
       if (!hasFiles(event)) return;
       event.preventDefault();
       event.stopPropagation();
+      clearDragLeaveTimer();
       void processFile(event.dataTransfer?.files?.[0]);
     };
 
     window.addEventListener("dragover", handleNativeDragOver, true);
+    window.addEventListener("dragleave", handleNativeDragLeave, true);
     window.addEventListener("drop", handleNativeDrop, true);
     return () => {
+      clearDragLeaveTimer();
       window.removeEventListener("dragover", handleNativeDragOver, true);
+      window.removeEventListener("dragleave", handleNativeDragLeave, true);
       window.removeEventListener("drop", handleNativeDrop, true);
     };
-  }, [processFile, setCatState]);
+  }, [clearDragLeaveTimer, processFile, scheduleDragLeaveReset, setCatState]);
 
   const handleDragEnter = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
       event.stopPropagation();
       event.dataTransfer.dropEffect = "copy";
+      clearDragLeaveTimer();
       setCatState("drag-over", "松手吧，我接住了。");
     },
-    [setCatState],
+    [clearDragLeaveTimer, setCatState],
   );
 
   const handleDragOver = useCallback(
@@ -107,27 +137,29 @@ export function usePaperDrop({ setCatState, onSummary }: UsePaperDropOptions) {
       event.preventDefault();
       event.stopPropagation();
       event.dataTransfer.dropEffect = "copy";
+      clearDragLeaveTimer();
       setCatState("drag-over", "松手吧，我接住了。");
     },
-    [setCatState],
+    [clearDragLeaveTimer, setCatState],
   );
 
   const handleDragLeave = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
       event.stopPropagation();
-      setCatState("idle");
+      scheduleDragLeaveReset();
     },
-    [setCatState],
+    [scheduleDragLeaveReset],
   );
 
   const handleDrop = useCallback(
     async (event: React.DragEvent) => {
       event.preventDefault();
       event.stopPropagation();
+      clearDragLeaveTimer();
       await processFile(event.dataTransfer.files?.[0]);
     },
-    [processFile],
+    [clearDragLeaveTimer, processFile],
   );
 
   return { handleDragEnter, handleDragOver, handleDragLeave, handleDrop };

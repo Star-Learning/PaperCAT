@@ -107,6 +107,7 @@ export function HistoryPanel() {
   const [savingMeta, setSavingMeta] = useState(false);
   const [error, setError] = useState("");
   const highlightTimerRef = useRef<number | null>(null);
+  const itemRefs = useRef(new Map<string, HTMLButtonElement>());
 
   const flashPaper = (paperId: string) => {
     setHighlightedId(paperId);
@@ -121,23 +122,37 @@ export function HistoryPanel() {
 
   const load = async (preferredId?: string) => {
     try {
+      if (preferredId) {
+        setQuery("");
+        setStatusFilter("all");
+        setTagFilter("");
+      }
       setError("");
       const result = await paperApi.list();
+      const preferredPaper = preferredId ? result.papers.find((paper) => paper.id === preferredId) : undefined;
       setPapers(result.papers);
       setSelected((current) => {
-        if (preferredId) return result.papers.find((paper) => paper.id === preferredId) ?? result.papers[0] ?? null;
+        if (preferredId) return preferredPaper ?? result.papers[0] ?? null;
         if (current) return result.papers.find((paper) => paper.id === current.id) ?? result.papers[0] ?? null;
         return result.papers[0] ?? null;
       });
-      if (preferredId) flashPaper(preferredId);
+      if (preferredPaper) flashPaper(preferredPaper.id);
     } catch (err) {
       setError(err instanceof Error ? err.message : "历史读取失败。");
     }
   };
 
   useEffect(() => {
-    void load(paperIdFromHash());
+    void (async () => {
+      const pendingId = (await window.paperCat?.getPendingHistorySelection?.()) ?? undefined;
+      void load(paperIdFromHash() ?? pendingId);
+    })();
+    const handleHashChange = () => {
+      void load(paperIdFromHash());
+    };
+    window.addEventListener("hashchange", handleHashChange);
     return () => {
+      window.removeEventListener("hashchange", handleHashChange);
       if (highlightTimerRef.current !== null) {
         window.clearTimeout(highlightTimerRef.current);
       }
@@ -190,6 +205,11 @@ export function HistoryPanel() {
       return haystack.includes(needle);
     });
   }, [papers, query, statusFilter, tagFilter]);
+
+  useEffect(() => {
+    if (!highlightedId) return;
+    itemRefs.current.get(highlightedId)?.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [highlightedId, filteredPapers]);
 
   const boardMarkdown = useMemo(
     () => (selected ? extractMarkdownSection(selected.summary_markdown, "论文看板") : ""),
@@ -289,6 +309,13 @@ export function HistoryPanel() {
             return (
               <button
                 key={paper.id}
+                ref={(node) => {
+                  if (node) {
+                    itemRefs.current.set(paper.id, node);
+                  } else {
+                    itemRefs.current.delete(paper.id);
+                  }
+                }}
                 className={`history-item ${selected?.id === paper.id ? "active" : ""} ${
                   highlightedId === paper.id ? "new-paper" : ""
                 }`}

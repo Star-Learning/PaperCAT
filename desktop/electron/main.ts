@@ -18,6 +18,7 @@ let historyWindow: BrowserWindowType | null = null;
 let settingsWindow: BrowserWindowType | null = null;
 const chatWindows = new Map<string, BrowserWindowType>();
 let currentSummary: unknown = null;
+let pendingHistoryPaperId: string | null = null;
 
 function broadcastSummaryCreated(summary: unknown) {
   const windows = [resultWindow, historyWindow, ...chatWindows.values()];
@@ -48,8 +49,14 @@ function openResultWindow() {
 }
 
 function openHistoryWindow(paperId?: string) {
+  if (paperId) {
+    pendingHistoryPaperId = paperId;
+  }
   if (historyWindow && !historyWindow.isDestroyed()) {
     const win = historyWindow;
+    if (!win.isVisible()) {
+      win.show();
+    }
     win.focus();
     if (paperId) {
       void win
@@ -103,6 +110,7 @@ app.whenReady().then(() => {
     return true;
   });
   ipcMain.handle("summary:get-current", () => currentSummary);
+  ipcMain.handle("history:get-pending-selection", () => pendingHistoryPaperId);
   ipcMain.handle("window:open-summary", () => openResultWindow());
   ipcMain.handle("window:open-paper-chat", (_event, paperId: string) => openPaperChatWindow(paperId));
   ipcMain.handle("window:open-history", (_event, paperId?: string) => openHistoryWindow(paperId));

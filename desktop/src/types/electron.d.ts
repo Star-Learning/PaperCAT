@@ -12,6 +12,7 @@ declare global {
       openSummary: () => Promise<void>;
       openPaperChat: (paperId: string) => Promise<void>;
       openHistory: (paperId?: string) => Promise<void>;
+      getPendingHistorySelection: () => Promise<string | null>;
       onHistorySelect: (callback: (paperId: string) => void) => () => void;
       openSettings: (mode?: "setup") => Promise<void>;
       quit: () => Promise<void>;
