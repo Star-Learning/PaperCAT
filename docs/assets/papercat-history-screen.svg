@@ -1,0 +1,113 @@
+<svg width="1280" height="760" viewBox="0 0 1280 760" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">PaperCAT history reading screen</title>
+  <desc id="desc">PaperCAT history page showing paper list, embedded PDF, summary, and per-paper AI chat.</desc>
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#211C18" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <rect width="1280" height="760" rx="28" fill="#F8F7F1"/>
+  <rect x="24" y="24" width="1232" height="712" rx="18" fill="#F8F7F1" stroke="#DED7CB"/>
+
+  <rect x="24" y="24" width="300" height="712" rx="18" fill="#EEF4F1"/>
+  <path d="M324 24V736" stroke="#D8D2C7"/>
+  <text x="52" y="72" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="750">阅读历史</text>
+  <rect x="252" y="50" width="42" height="24" rx="12" fill="#DDEFE9"/>
+  <text x="273" y="67" text-anchor="middle" fill="#2C725F" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="12">3篇</text>
+
+  <rect x="52" y="98" width="242" height="40" rx="8" fill="#FFFDFA" stroke="#DAD2C6"/>
+  <text x="82" y="123" fill="#69736E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14">搜索标题、作者、摘要、标签...</text>
+  <circle cx="68" cy="117" r="7" stroke="#69736E" stroke-width="2"/>
+  <path d="M74 123L80 129" stroke="#69736E" stroke-width="2" stroke-linecap="round"/>
+
+  <rect x="52" y="154" width="54" height="30" rx="15" fill="#EEF7F3" stroke="#2F8F79"/>
+  <text x="79" y="174" text-anchor="middle" fill="#226A59" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">全部</text>
+  <rect x="114" y="154" width="54" height="30" rx="15" fill="#FFFDFA" stroke="#DAD2C6"/>
+  <text x="141" y="174" text-anchor="middle" fill="#4F5C57" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">在读</text>
+  <rect x="176" y="154" width="54" height="30" rx="15" fill="#FFFDFA" stroke="#DAD2C6"/>
+  <text x="203" y="174" text-anchor="middle" fill="#4F5C57" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">已读</text>
+
+  <g filter="url(#shadow)">
+    <rect x="52" y="212" width="242" height="146" rx="8" fill="#FFFFFF" stroke="#2F8F79" stroke-width="2"/>
+    <text x="70" y="242" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">Deep Learning for Climate...</text>
+    <rect x="70" y="258" width="58" height="24" rx="12" fill="#EEF4FF"/>
+    <text x="99" y="274" text-anchor="middle" fill="#4452A6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="12">在读</text>
+    <rect x="70" y="292" width="142" height="24" rx="12" fill="#EEF7F3"/>
+    <text x="141" y="308" text-anchor="middle" fill="#2C725F" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="12">读取于 2026/6/10</text>
+    <text x="70" y="336" fill="#46524D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">这篇论文提出一种...</text>
+  </g>
+  <rect x="52" y="374" width="242" height="118" rx="8" fill="#FFFFFF" stroke="#E2DACF"/>
+  <text x="70" y="404" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">Foundation Models...</text>
+  <rect x="70" y="420" width="58" height="24" rx="12" fill="#EDF7F3"/>
+  <text x="99" y="436" text-anchor="middle" fill="#2C725F" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="12">已读</text>
+  <text x="70" y="472" fill="#46524D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">多模态方法总结...</text>
+
+  <section>
+    <text x="356" y="68" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="23" font-weight="750">Deep Learning for Climate Downscaling</text>
+    <text x="356" y="94" fill="#66736D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14">C:\Papers\climate-downscaling.pdf</text>
+    <rect x="356" y="112" width="132" height="28" rx="14" fill="#FFFDFA" stroke="#DED7CB"/>
+    <text x="422" y="131" text-anchor="middle" fill="#4F5C57" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">24 页</text>
+    <rect x="500" y="112" width="132" height="28" rx="14" fill="#FFFDFA" stroke="#DED7CB"/>
+    <text x="566" y="131" text-anchor="middle" fill="#4F5C57" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">已缓存</text>
+
+    <rect x="356" y="164" width="230" height="42" rx="8" fill="#FFFDFA" stroke="#E1D9CB"/>
+    <text x="378" y="190" fill="#226A59" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14">待读 / 在读 / 已读 / 收藏</text>
+    <rect x="600" y="164" width="250" height="42" rx="8" fill="#FFFDFA" stroke="#E1D9CB"/>
+    <text x="620" y="190" fill="#69736E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14">标签：climate, deep-learning</text>
+  </section>
+
+  <g filter="url(#shadow)">
+    <rect x="356" y="226" width="292" height="462" rx="8" fill="#FFFDFA" stroke="#E1D9CB"/>
+    <rect x="356" y="226" width="292" height="44" rx="8" fill="#F8F7F1" stroke="#E1D9CB"/>
+    <text x="376" y="254" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">PDF 原文</text>
+    <rect x="382" y="296" width="240" height="342" rx="4" fill="#FFFFFF" stroke="#D4DAD6"/>
+    <rect x="408" y="322" width="94" height="16" rx="3" fill="#17211E" opacity="0.85"/>
+    <rect x="408" y="356" width="188" height="7" rx="3.5" fill="#9BA6A0"/>
+    <rect x="408" y="374" width="168" height="7" rx="3.5" fill="#9BA6A0"/>
+    <rect x="408" y="392" width="190" height="7" rx="3.5" fill="#9BA6A0"/>
+    <rect x="408" y="428" width="144" height="92" rx="6" fill="#EEF7F3" stroke="#BFDCD3"/>
+    <rect x="408" y="548" width="190" height="7" rx="3.5" fill="#9BA6A0"/>
+    <rect x="408" y="566" width="170" height="7" rx="3.5" fill="#9BA6A0"/>
+    <rect x="408" y="584" width="188" height="7" rx="3.5" fill="#9BA6A0"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="666" y="226" width="286" height="462" rx="8" fill="#FFFDFA" stroke="#E1D9CB"/>
+    <rect x="666" y="226" width="286" height="44" rx="8" fill="#F8F7F1" stroke="#E1D9CB"/>
+    <text x="686" y="254" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">PaperCAT 总结</text>
+    <text x="690" y="306" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="750">核心问题</text>
+    <rect x="690" y="326" width="214" height="8" rx="4" fill="#9BA6A0"/>
+    <rect x="690" y="346" width="236" height="8" rx="4" fill="#9BA6A0"/>
+    <rect x="690" y="366" width="198" height="8" rx="4" fill="#9BA6A0"/>
+    <text x="690" y="424" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="750">方法贡献</text>
+    <rect x="690" y="444" width="226" height="8" rx="4" fill="#9BA6A0"/>
+    <rect x="690" y="464" width="210" height="8" rx="4" fill="#9BA6A0"/>
+    <rect x="690" y="484" width="238" height="8" rx="4" fill="#9BA6A0"/>
+    <rect x="690" y="526" width="218" height="72" rx="8" fill="#EEF4F1" stroke="#CFE0DA"/>
+    <text x="710" y="556" fill="#2C725F" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="700">适合快速判断是否精读</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="972" y="50" width="250" height="638" rx="8" fill="#FFFDFA" stroke="#E1D9CB"/>
+    <rect x="972" y="50" width="250" height="92" rx="8" fill="#F2F8F5" stroke="#E1D9CB"/>
+    <text x="994" y="86" fill="#2C725F" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="750">论文对话</text>
+    <text x="994" y="116" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">围绕当前论文提问</text>
+    <circle cx="1006" cy="184" r="14" fill="#FFFDFA" stroke="#DAD2C6"/>
+    <path d="M999 184C999 178 1003 174 1007 174C1012 174 1016 178 1016 184C1016 190 1012 194 1007 194C1003 194 999 190 999 184Z" fill="#252B28"/>
+    <rect x="1030" y="164" width="164" height="72" rx="8" fill="#FFFDFA" stroke="#DAD2C6"/>
+    <text x="1046" y="194" fill="#46524D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">可以问方法模块、实验</text>
+    <text x="1046" y="214" fill="#46524D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">结果和复现细节。</text>
+    <rect x="1016" y="268" width="178" height="58" rx="8" fill="#EDF7F3" stroke="#C8E1D8"/>
+    <text x="1034" y="303" fill="#25312E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">核心贡献是什么？</text>
+    <circle cx="1006" cy="380" r="14" fill="#FFFDFA" stroke="#DAD2C6"/>
+    <path d="M999 380C999 374 1003 370 1007 370C1012 370 1016 374 1016 380C1016 386 1012 390 1007 390C1003 390 999 386 999 380Z" fill="#252B28"/>
+    <rect x="1030" y="352" width="164" height="98" rx="8" fill="#FFFDFA" stroke="#DAD2C6"/>
+    <rect x="1046" y="378" width="120" height="7" rx="3.5" fill="#9BA6A0"/>
+    <rect x="1046" y="398" width="132" height="7" rx="3.5" fill="#9BA6A0"/>
+    <rect x="1046" y="418" width="96" height="7" rx="3.5" fill="#9BA6A0"/>
+    <rect x="994" y="616" width="176" height="44" rx="8" fill="#FFFDFA" stroke="#DAD2C6"/>
+    <text x="1012" y="644" fill="#8A948F" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13">Enter 发送...</text>
+    <rect x="1178" y="616" width="28" height="44" rx="8" fill="#FFFFFF" stroke="#DAD2C6"/>
+  </g>
+</svg>

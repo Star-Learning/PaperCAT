@@ -16,9 +16,21 @@ PaperCAT 是一个桌面宠物式论文阅读助手。把 PDF 拖给小猫，它
 - 单篇对话：每篇论文都有固定 AI 对话窗，会携带 PDF 正文片段和总结作为上下文，回复支持流式输出。
 - 模型配置：内置常见 OpenAI-compatible 厂商和模型选项，用户主要填写 API key。
 
+## 界面预览
+
+配置保存路径和大模型 API：
+
+![PaperCAT 设置界面](docs/assets/papercat-settings-screen.svg)
+
+查看论文原文、总结和单篇对话：
+
+![PaperCAT 历史阅读界面](docs/assets/papercat-history-screen.svg)
+
 ## 快速启动
 
 当前阶段不需要先打包，直接把代码 clone 到本地后启动即可。
+
+> **小提示：如果你正在使用 Claude Code 或 Codex，也可以让它先阅读理解项目结构，再直接在本地执行启动脚本。**
 
 准备环境：
 

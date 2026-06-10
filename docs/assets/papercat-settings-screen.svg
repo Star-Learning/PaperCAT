@@ -1,0 +1,78 @@
+<svg width="1180" height="720" viewBox="0 0 1180 720" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">PaperCAT settings screen</title>
+  <desc id="desc">PaperCAT settings interface showing storage path and large language model API configuration.</desc>
+  <defs>
+    <linearGradient id="hero" x1="28" y1="28" x2="1132" y2="160" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFDF7"/>
+      <stop offset="1" stop-color="#EEF7F3"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#211C18" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <rect width="1180" height="720" rx="28" fill="#F8F7F1"/>
+  <rect x="28" y="28" width="1124" height="664" rx="18" fill="#F8F7F1" stroke="#DED7CB"/>
+
+  <rect x="58" y="54" width="1064" height="104" rx="10" fill="url(#hero)" stroke="#E1D9CB"/>
+  <text x="88" y="98" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="30" font-weight="750">PaperCAT 设置</text>
+  <text x="88" y="132" fill="#5D6964" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17">密钥只保存在本地；缓存目录用于保存 PDF 副本、metadata 和 summary.md。</text>
+
+  <g filter="url(#shadow)">
+    <rect x="58" y="188" width="1064" height="198" rx="10" fill="#FFFDFA" stroke="#E1D9CB"/>
+    <text x="88" y="231" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">保存路径</text>
+    <text x="88" y="271" fill="#46524D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15">论文缓存目录</text>
+    <rect x="88" y="289" width="872" height="44" rx="8" fill="#F8F7F1" stroke="#D9D2C7"/>
+    <text x="108" y="317" fill="#17211E" font-family="Consolas, SFMono-Regular, monospace" font-size="15">C:\Users\you\Documents\PaperCAT\cache</text>
+    <rect x="976" y="289" width="52" height="44" rx="8" fill="#FFFFFF" stroke="#D9D2C7"/>
+    <path d="M991 306H1001L1005 312H1016V326H991V306Z" stroke="#2F8F79" stroke-width="2.4" stroke-linejoin="round"/>
+    <text x="88" y="361" fill="#69736E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14">历史数据库位置只读显示，PDF 保存目录可随时调整。</text>
+    <rect x="918" y="340" width="110" height="34" rx="8" fill="#FFFFFF" stroke="#2F8F79"/>
+    <text x="973" y="362" text-anchor="middle" fill="#226A59" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650">保存路径</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="58" y="414" width="1064" height="244" rx="10" fill="#FFFDFA" stroke="#E1D9CB"/>
+    <text x="88" y="457" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="700">大模型 API</text>
+
+    <g>
+      <rect x="88" y="482" width="144" height="66" rx="8" fill="#EEF7F3" stroke="#2F8F79" stroke-width="2"/>
+      <text x="108" y="510" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">OpenAI</text>
+      <text x="108" y="531" fill="#66736D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="12">官方 API</text>
+    </g>
+    <g>
+      <rect x="246" y="482" width="144" height="66" rx="8" fill="#FFFFFF" stroke="#E1D9CB"/>
+      <text x="266" y="510" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">DeepSeek</text>
+      <text x="266" y="531" fill="#66736D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="12">兼容接口</text>
+    </g>
+    <g>
+      <rect x="404" y="482" width="144" height="66" rx="8" fill="#FFFFFF" stroke="#E1D9CB"/>
+      <text x="424" y="510" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">DashScope</text>
+      <text x="424" y="531" fill="#66736D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="12">通义千问</text>
+    </g>
+    <g>
+      <rect x="562" y="482" width="144" height="66" rx="8" fill="#FFFFFF" stroke="#E1D9CB"/>
+      <text x="582" y="510" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">Kimi</text>
+      <text x="582" y="531" fill="#66736D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="12">Moonshot</text>
+    </g>
+    <g>
+      <rect x="720" y="482" width="144" height="66" rx="8" fill="#FFFFFF" stroke="#E1D9CB"/>
+      <text x="740" y="510" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">GLM</text>
+      <text x="740" y="531" fill="#66736D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="12">智谱</text>
+    </g>
+    <g>
+      <rect x="878" y="482" width="144" height="66" rx="8" fill="#FFFFFF" stroke="#E1D9CB"/>
+      <text x="898" y="510" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="700">OpenRouter</text>
+      <text x="898" y="531" fill="#66736D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="12">聚合接口</text>
+    </g>
+
+    <text x="88" y="586" fill="#46524D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15">模型</text>
+    <rect x="88" y="602" width="332" height="40" rx="8" fill="#FFFDFA" stroke="#D9D2C7"/>
+    <text x="108" y="627" fill="#17211E" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14">gpt-5.5</text>
+    <text x="454" y="586" fill="#46524D" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15">API Key</text>
+    <rect x="454" y="602" width="430" height="40" rx="8" fill="#FFFDFA" stroke="#D9D2C7"/>
+    <text x="474" y="627" fill="#8A948F" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14">粘贴这个厂商的 API key</text>
+    <rect x="918" y="603" width="110" height="38" rx="8" fill="#FFFFFF" stroke="#2F8F79"/>
+    <text x="973" y="627" text-anchor="middle" fill="#226A59" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="650">保存 API</text>
+  </g>
+</svg>
