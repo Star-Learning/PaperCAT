@@ -61,8 +61,6 @@ PaperCAT/
 
 当前阶段不需要先打包，直接把代码 clone 到本地后启动即可。
 
-> **小提示：如果你正在使用 Claude Code 或 Codex，也可以让它先阅读理解项目结构，再直接在本地执行启动脚本。**
-
 准备环境：
 
 - Windows
@@ -77,13 +75,34 @@ git clone https://github.com/Star-Learning/PaperCAT.git
 cd PaperCAT
 ```
 
-首次启动：
+### 当前推荐：start_prompt.md
+
+如果你正在使用 Claude Code、Codex 或其他本地 coding agent，推荐先用 `start_prompt.md` 启动。它会让 AI 先理解项目结构，再根据你的本机环境运行脚本、检查依赖、处理端口占用和查看日志。对新用户来说，这种方式最省心。
+
+项目根目录提供了一份现成提示词：
+
+```text
+start_prompt.md
+```
+
+使用方式：
+
+1. clone 项目并进入 `PaperCAT/`。
+2. 打开 [start_prompt.md](start_prompt.md)。
+3. 把里面的提示词复制给 Claude Code 或 Codex。
+4. 让它按提示阅读项目、运行启动脚本、检查后端健康状态。
+
+这套方式适合不想手动排查环境问题的用户：AI 会根据本机情况检查 Python、Node.js、端口占用、日志等信息，然后再启动项目。
+
+### 备用方式：start_script
 
 ```bat
 start_papercat.cmd
 ```
 
-这个脚本会自动创建 Python 虚拟环境、安装前后端依赖、启动 FastAPI 后端，并打开 Electron 桌面小猫。
+这里的 `start_script` 指项目根目录下的 Windows 启动脚本 `start_papercat.cmd`。如果你已经熟悉本地环境，也可以直接双击或在终端运行它。
+
+这个脚本会自动创建 Python 虚拟环境、安装前后端依赖、构建桌面端、启动 FastAPI 后端，并打开 Electron 桌面小猫。
 
 已经安装过依赖时，可以跳过依赖安装：
 
