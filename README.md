@@ -6,6 +6,35 @@
 
 PaperCAT 是一个桌面宠物式论文阅读助手。把 PDF 拖给小猫，它会自动缓存论文、解析正文、生成中文总结，并把原文、总结、标签、阅读状态和单篇论文 AI 对话都保存到本地历史记录里。
 
+## 代码结构
+
+```text
+PaperCAT/
+├─ backend/                  FastAPI 后端
+│  ├─ app/
+│  │  ├─ routes/             设置、论文记录等 API 路由
+│  │  ├─ services/           PDF 缓存、解析、总结、论文对话、LLM 调用
+│  │  ├─ prompts/            论文总结提示词
+│  │  ├─ config.py           路径、密钥、模型等配置读取
+│  │  ├─ database.py         SQLite 初始化和连接
+│  │  └─ models.py           数据表模型
+│  ├─ data/                  本地 SQLite 数据库
+│  ├─ outputs/cache/         默认 PDF 缓存目录
+│  ├─ secrets/               本地 API key 和保存路径配置
+│  └─ run_backend.py         后端启动入口
+├─ desktop/                  Electron + React 桌面端
+│  ├─ electron/              主进程、预加载脚本、窗口管理
+│  └─ src/
+│     ├─ components/         小猫、设置、历史记录、PDF 阅读、论文对话 UI
+│     ├─ hooks/              小猫状态和 PDF 拖拽逻辑
+│     ├─ api/                前端请求后端的 API 封装
+│     └─ styles/             全局样式和小猫动画
+├─ docs/assets/              README 图片和界面预览
+├─ scripts/                  启动脚本
+├─ skills/                   PaperCAT 论文总结 skill
+└─ start_papercat.cmd        Windows 一键启动入口
+```
+
 ## 核心功能
 
 - 桌面小猫投喂：拖拽 PDF 后用咀嚼、思考、完成、错误等状态反馈进度。
@@ -114,38 +143,11 @@ backend/outputs/cache/
 
 缓存目录中会保存 PDF 副本、`metadata.json` 和 `summary.md`。历史记录、标签、阅读状态和论文对话会写入 SQLite。
 
-## 项目结构
+## Todo List
 
-```text
-backend/    FastAPI 后端、PDF 解析、LLM 调用、SQLite 存储
-desktop/    Electron + React 桌面端、小猫 UI、历史记录和论文对话
-scripts/    启动脚本
-skills/     PaperCAT 论文总结 skill
-```
-
-## 开发检查
-
-```powershell
-cd desktop
-npm run build
-```
-
-```powershell
-cd backend
-.\.venv\Scripts\python.exe -m compileall app
-```
-
-```powershell
-cd desktop
-node --check electron\main.cjs
-node --check electron\preload.cjs
-```
-
-## 可能待完善
-
-- 扫描版 PDF 的 OCR 支持。
-- 批量投喂和批量整理论文。
-- Zotero、BibTeX 或文献库同步。
-- 更细的阅读位置记忆、批注和高亮。
-- 本地模型模式和模型连通性测试。
-- 更多总结模板，例如复现指南、审稿视角、领域综述卡片。
+- [ ] 扫描版 PDF 的 OCR 支持。
+- [ ] 批量投喂和批量整理论文。
+- [ ] Zotero、BibTeX 或文献库同步。
+- [ ] 更细的阅读位置记忆、批注和高亮。
+- [ ] 本地模型模式和模型连通性测试。
+- [ ] 更多总结模板，例如复现指南、审稿视角、领域综述卡片。
