@@ -18,23 +18,78 @@ PaperCAT 是一个桌面宠物式论文阅读助手。把 PDF 拖给小猫，它
 
 ## 快速启动
 
-Windows 下直接运行：
+当前阶段不需要先打包，直接把代码 clone 到本地后启动即可。
+
+准备环境：
+
+- Windows
+- Git
+- Python 3.10+
+- Node.js 18+
+
+克隆并进入项目：
+
+```powershell
+git clone https://github.com/Star-Learning/PaperCAT.git
+cd PaperCAT
+```
+
+首次启动：
 
 ```bat
 start_papercat.cmd
 ```
 
-已经安装过依赖时可以跳过安装：
+这个脚本会自动创建 Python 虚拟环境、安装前后端依赖、启动 FastAPI 后端，并打开 Electron 桌面小猫。
+
+已经安装过依赖时，可以跳过依赖安装：
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts\start_papercat.ps1 -SkipInstall
 ```
 
-健康检查：
+后端健康检查：
 
 ```powershell
 Invoke-RestMethod -Uri http://127.0.0.1:8766/api/health
 ```
+
+看到 `status: ok` 就说明后端已经启动。
+
+## 配置流程
+
+第一次打开时，如果暂时不想配置保存路径或大模型 API，可以先跳过。之后随时可以从小猫菜单打开“设置”。
+
+保存路径配置：
+
+1. 打开小猫菜单里的“设置”。
+2. 在保存路径区域选择或填写论文缓存目录。
+3. 保存后，之后投喂的 PDF 会自动复制到这个目录，不会再弹出保存文件选择框。
+
+如果没有手动配置，默认使用：
+
+```text
+backend/outputs/cache/
+```
+
+大模型 API 配置：
+
+1. 打开小猫菜单里的“设置”。
+2. 选择大模型厂商，例如 OpenAI、DeepSeek、DashScope、Kimi、智谱、SiliconFlow 或 OpenRouter。
+3. 选择模型。
+4. 粘贴对应厂商的 API key。
+5. 保存配置。
+
+一般不需要手动填写 Base URL，PaperCAT 会根据厂商选项自动配置 OpenAI-compatible 接口地址。
+
+本地配置和密钥文件：
+
+```text
+backend/secrets/llm.env
+backend/secrets/storage.env
+```
+
+这些文件不会提交到 Git。
 
 ## 本地数据
 
@@ -45,25 +100,18 @@ backend/data/papers.db
 backend/outputs/cache/
 ```
 
-本地配置和密钥文件：
-
-```text
-backend/secrets/llm.env
-backend/secrets/storage.env
-```
-
-这些文件不会提交到 Git。缓存目录中会保存 PDF 副本、`metadata.json` 和 `summary.md`。
+缓存目录中会保存 PDF 副本、`metadata.json` 和 `summary.md`。历史记录、标签、阅读状态和论文对话会写入 SQLite。
 
 ## 项目结构
 
 ```text
 backend/    FastAPI 后端、PDF 解析、LLM 调用、SQLite 存储
 desktop/    Electron + React 桌面端、小猫 UI、历史记录和论文对话
-scripts/    启动和打包脚本
+scripts/    启动脚本
 skills/     PaperCAT 论文总结 skill
 ```
 
-## 开发验证
+## 开发检查
 
 ```powershell
 cd desktop
