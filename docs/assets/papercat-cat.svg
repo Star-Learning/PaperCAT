@@ -1,0 +1,93 @@
+<svg width="820" height="360" viewBox="0 0 820 360" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">PaperCAT desktop cat</title>
+  <desc id="desc">A black desktop cat with cream face, teal collar, bell, paper snack, and thinking bubbles.</desc>
+  <defs>
+    <linearGradient id="body" x1="266" y1="102" x2="430" y2="304" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3B3732"/>
+      <stop offset="0.55" stop-color="#252B28"/>
+      <stop offset="1" stop-color="#151B19"/>
+    </linearGradient>
+    <linearGradient id="face" x1="330" y1="140" x2="330" y2="270" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF7E9"/>
+      <stop offset="1" stop-color="#EEE3D1"/>
+    </linearGradient>
+    <linearGradient id="bell" x1="410" y1="240" x2="410" y2="271" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFD86E"/>
+      <stop offset="1" stop-color="#D99A2B"/>
+    </linearGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="820" y2="360" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFCF6"/>
+      <stop offset="1" stop-color="#EEF7F3"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="24" stdDeviation="18" flood-color="#231B17" flood-opacity="0.22"/>
+    </filter>
+    <filter id="bubbleShadow" x="-20%" y="-30%" width="140%" height="170%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#2D261F" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+
+  <rect x="12" y="12" width="796" height="336" rx="34" fill="url(#panel)" stroke="#E4DDD0"/>
+  <ellipse cx="405" cy="298" rx="168" ry="32" fill="#443025" opacity="0.18"/>
+
+  <g filter="url(#bubbleShadow)">
+    <path d="M98 67C98 45 116 27 138 27H390C412 27 430 45 430 67V118C430 140 412 158 390 158H187L155 188V158H138C116 158 98 140 98 118V67Z" fill="#FFFCF6" stroke="#E7DCCB"/>
+    <text x="132" y="78" fill="#2B2824" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="23" font-weight="750">PaperCAT</text>
+    <text x="132" y="111" fill="#59645F" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16">Feed a PDF once. Read it with a cat later.</text>
+  </g>
+
+  <g filter="url(#softShadow)">
+    <path d="M522 229C531 196 560 173 596 176C631 180 655 208 652 242" stroke="#252B28" stroke-width="24" stroke-linecap="round"/>
+    <circle cx="656" cy="241" r="17" fill="#F6EFE1" stroke="#242B28" stroke-width="4"/>
+
+    <path d="M279 185C279 129 329 91 407 91C485 91 535 129 535 185C535 257 486 307 407 307C328 307 279 257 279 185Z" fill="url(#body)"/>
+    <path d="M318 120L338 50L377 130L318 120Z" fill="url(#body)"/>
+    <path d="M496 120L476 50L437 130L496 120Z" fill="url(#body)"/>
+    <path d="M338 112L350 74L371 123L338 112Z" fill="#D99F8E" opacity="0.72"/>
+    <path d="M476 112L464 74L443 123L476 112Z" fill="#D99F8E" opacity="0.72"/>
+
+    <path d="M389 112C389 112 407 129 425 112V147C425 161 413 171 407 171C401 171 389 161 389 147V112Z" fill="#F6EFE1" opacity="0.82"/>
+    <path d="M316 178C316 139 353 116 407 116C461 116 498 139 498 178C498 239 462 282 407 282C352 282 316 239 316 178Z" fill="url(#face)"/>
+    <path d="M339 163C356 139 385 129 407 129C429 129 458 139 475 163" stroke="white" stroke-opacity="0.28" stroke-width="10" stroke-linecap="round"/>
+
+    <ellipse cx="374" cy="181" rx="11" ry="16" fill="#171B19"/>
+    <ellipse cx="440" cy="181" rx="11" ry="16" fill="#171B19"/>
+    <ellipse cx="378" cy="175" rx="3.4" ry="4.2" fill="white" opacity="0.85"/>
+    <ellipse cx="444" cy="175" rx="3.4" ry="4.2" fill="white" opacity="0.85"/>
+    <ellipse cx="407" cy="210" rx="10" ry="7" fill="#C77971"/>
+    <path d="M393 228C401 238 413 238 421 228" stroke="#171B19" stroke-width="6" stroke-linecap="round"/>
+    <ellipse cx="350" cy="215" rx="15" ry="8" fill="#D98177" opacity="0.26"/>
+    <ellipse cx="464" cy="215" rx="15" ry="8" fill="#D98177" opacity="0.26"/>
+
+    <path d="M323 211L366 206" stroke="#564C40" stroke-opacity="0.62" stroke-width="3" stroke-linecap="round"/>
+    <path d="M324 228L366 224" stroke="#564C40" stroke-opacity="0.62" stroke-width="3" stroke-linecap="round"/>
+    <path d="M448 206L491 211" stroke="#564C40" stroke-opacity="0.62" stroke-width="3" stroke-linecap="round"/>
+    <path d="M448 224L490 228" stroke="#564C40" stroke-opacity="0.62" stroke-width="3" stroke-linecap="round"/>
+
+    <rect x="354" y="246" width="106" height="15" rx="7.5" fill="#2F8F79"/>
+    <circle cx="407" cy="266" r="14" fill="url(#bell)"/>
+    <path d="M397 262H417" stroke="#94671D" stroke-width="3" stroke-linecap="round"/>
+    <path d="M407 266V273" stroke="#94671D" stroke-width="3" stroke-linecap="round"/>
+
+    <path d="M344 270C344 258 354 249 366 249H384C396 249 406 258 406 270V291H344V270Z" fill="#FFF6E8"/>
+    <path d="M408 270C408 258 418 249 430 249H448C460 249 470 258 470 270V291H408V270Z" fill="#FFF6E8"/>
+    <path d="M366 280H386M430 280H450" stroke="#5C463A" stroke-opacity="0.26" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <g>
+    <rect x="212" y="176" width="49" height="61" rx="7" fill="#FFFDFA" stroke="#37302A" stroke-opacity="0.62" stroke-width="4"/>
+    <path d="M226 198H247M226 213H247" stroke="#2F8F79" stroke-opacity="0.45" stroke-width="4" stroke-linecap="round"/>
+    <path d="M226 228H240" stroke="#9BA6A0" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <g>
+    <circle cx="566" cy="78" r="10" fill="#FFFDFA" stroke="#D8CEC0"/>
+    <circle cx="594" cy="58" r="14" fill="#FFFDFA" stroke="#D8CEC0"/>
+    <circle cx="629" cy="40" r="18" fill="#FFFDFA" stroke="#D8CEC0"/>
+  </g>
+
+  <g>
+    <path d="M605 153L613 173L634 177L616 189L619 211L602 196L581 206L590 186L574 171L596 169L605 153Z" fill="#FFD86E"/>
+    <path d="M674 117L681 133L698 136L684 146L686 163L672 153L656 161L662 144L650 132L667 131L674 117Z" fill="#69BFA8"/>
+  </g>
+</svg>
